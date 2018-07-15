@@ -1,0 +1,7 @@
+web:
+  image: oydeu/app-seal
+  env_file: .env
+  environment:
+    RAILS_ENV: production
+  ports:
+    - "3000:3000"

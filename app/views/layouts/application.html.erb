@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= t('general.title') %></title>
+    <%= csrf_meta_tags %>
+
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-2">
+          <a href="https://www.ownyourdata.eu/<%= I18n.locale.to_s %>"><%= image_tag 'oyd.png', style: "height: 48px; margin: 18px 0;" %></a>
+        </div>
+        <div class="col-xs-8">
+          <h1 style="text-align: center; margin-bottom: 30px;"><%= t('general.title') %></h1>
+        </div>
+        <div class="col-xs-2" style="white-space: nowrap; margin-top: 30px; text-align: right;">
+          <%= link_to_unless I18n.locale.to_s == "de", "DE", { locale: 'de', hash: params[:hash] } %> | 
+          <%= link_to_unless I18n.locale.to_s == "en", "EN", { locale: 'en', hash: params[:hash] } %>
+        </div>
+      </div>
+      <%= yield %>
+    </div>
+    <hr>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          &copy; <a href="https://www.ownyourdata.eu/<%= I18n.locale %>">OwnYourData.eu</a>
+          <% if I18n.locale.to_s == "en" %>
+            <a href="https://www.ownyourdata.eu/en/imprint/" style="margin: 0 10px;">Imprint</a>
+            <a href="https://www.ownyourdata.eu/en/privacy-policy/">Privacy Policy</a>
+          <% else %>
+            <a href="https://www.ownyourdata.eu/de/impressum/" style="margin: 0 10px;">Impressum</a>
+            <a href="https://www.ownyourdata.eu/de/datenschutz/">Datenschutz</a>
+          <% end %>
+          <%= link_to t('general.faq'), faq_url(locale: I18n.locale), style: "margin: 0 10px;" %>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
