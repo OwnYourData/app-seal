@@ -40,7 +40,7 @@
           <%= form_with url: submit_path do |form| %>
             <%= form.hidden_field :mode, value:"advanced" %>
             <%= form.label :hash_field, t('general.hash_value') %><br>
-            <%= form.text_area :hash_field, rows: "4", style:"width: 100%" %><br>
+            <%= form.text_area :hash_field, rows: "4", style:"width: 100%", value: params[:hash].to_s %><br>
 
             <% flash.each do |message_type, message| %>
                 <div class="alert alert-<%= message_type %>"><%= message %></div>
@@ -70,7 +70,7 @@
   <div class="row" style="margin-top: 20px;">
     <% if I18n.locale.to_s == "de" %>
       <div class="col-md-12">
-        Diese Datei wurde das erste Mal am <%= @oyd_ts %> hochgeladen
+        Der Hashwert <%= params[:hash] %> wurde das erste Mal am <%= @oyd_ts %> erstellt
         <% if @root_node.to_s == "" %>
           und wird in ca. <%= @wait %> Stunden versiegelt.
         <% else %>
@@ -91,7 +91,7 @@
       </div>
     <% else %>
       <div class="col-md-12">
-        This file was uploaded for the first time on <%= @oyd_ts %>
+        The hash value <%= params[:hash] %> was created for the first time on <%= @oyd_ts %>
         <% if @root_node.to_s == "" %>
           and will be sealed in about <%= @wait %> hours.
        <% else %>
