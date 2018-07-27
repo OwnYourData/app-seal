@@ -1,7 +1,15 @@
 en:
   general:
     title: "Seal Document"
-    info: "On this page you can generate an independently verifiable timestamp (= seal) for your documents for free. Every time the first known timestamp for the document will be displayed."
+    # info: "On this page you can generate an independently verifiable timestamp (= seal) for your documents for free. Every time the first known timestamp for the document will be displayed."
+    info: | 
+        Here's the safest and easiest place to protect your data and documents. Whether piece of music, photo, 
+        algorithm or other information worthy of protection - thanks to Blockchain technology, your information 
+        is 100% anonymous, 100% tamper-proof and 100% legally binding.
+        </br></br>
+        <em>Why its great:</em> We do not store any of your information, but at the same time provide you with a legally sound proof.
+        </br></br>
+        <em>Tip for all curious:</em> Test it now with any sample document!
     fingerprint_info: "Fingerprint (hash value) for "
     submit: "Request Seal"
     reset: "Reset"

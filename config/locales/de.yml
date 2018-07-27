@@ -1,7 +1,17 @@
 de:
   general:
     title: "Dokument versiegeln"
-    info: "Auf dieser Webseite kannst du dir gratis einen unabhängig verifizierbaren Zeitstempel (= Siegel) für deine Dokumente erstellen. Jedes Mal wird dabei der früheste bekannte Zeitstempel des Dokuments angezeigt."
+    # info: "Auf dieser Webseite kannst du dir gratis einen unabhängig verifizierbaren Zeitstempel (= Siegel) für deine Dokumente erstellen. Jedes Mal wird dabei der früheste bekannte Zeitstempel des Dokuments angezeigt."
+    info: |
+      Hier findest du die sicherste und gleichzeitg einfachste Form, deine Daten und Dokumente zu schützen. 
+      Egal ob Musikstück, Foto, Algorithmus oder sonstige schützenswerte Informationen - 
+      dank Blockchain-Technologie sind deine Informationen 100% anonym, 100% manipulationssicher und 
+      zu 100% rechtlich verbindlich abgesichert.
+      </br></br>
+      <em>Das Tolle daran:</em> Wir selbst speichern keine Informationen, liefern dir aber gleichzeitig
+       rechtlich einwandfreie Beweise.
+      </br></br>
+      <em>Tipp für alle Neugierigen:</em> Jetzt mit einem beliebigen Probedokument testen!
     fingerprint_info: "Fingerabdruck (Hashwert) für "
     submit: "Siegel anfordern"
     reset: "Zurücksetzen"
