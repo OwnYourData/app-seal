@@ -1,0 +1,328 @@
+<div class="row">
+  <% if params["hash"].to_s == "" %>
+    <div class="col-md-12">
+      <div class="alert alert-info">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <%= t('general.info').html_safe %>
+      </div>
+    </div>
+  <% end %>
+  <div class="col-md-12">
+    <div>
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="<%= params['mode'].to_s!='advanced' ? ' active' : '' %>"><a href="#basic" aria-controls="basic" role="tab" data-toggle="tab"><%= t('general.basic_tab') %></a></li>
+        <li role="presentation" class="<%= params['mode'].to_s=='advanced' ? ' active' : '' %>"><a href="#advanced" aria-controls="advanced" role="tab" data-toggle="tab"><%= t('general.advanced_tab') %></a></li>
+      </ul>
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane<%= params[:mode].to_s!='advanced' ? ' active' : '' %>" id="basic">
+          <div class="col-md-6" style="margin-top: 15px;">
+
+            <div id="drop-area">
+              <form class="drag-form">
+                <p><%= t('general.upload_info') %></p>
+                <input type="file" id="fileElem" onchange="handleFiles(this.files[0])">
+                <label class="button" for="fileElem"><%= t('general.select_file') %></label>
+              </form>
+              <progress id="progress-bar" max=100 value=0></progress><div id="hash-progress" style="display: none; margin: 0 5px; vertical-align: text-bottom;"><%= t('general.wait_hash') %></div>
+            </div>
+          </div>
+          <div class="col-md-6" style="margin-top: 15px;">
+            <div id="hash" style="margin: 7px; word-wrap: break-word;"></div>
+            <%= form_with url: submit_path do |form| %>
+            <%= form.hidden_field :hash_field, id:"hash_field" %>
+            <%= form.button t('general.submit'), class: "btn btn-primary", style:"margin: 7px;" %>
+            <a href="/<%= I18n.locale.to_s %>" class="btn btn-default"><%= t('general.reset') %></a>
+            <% end %>
+          </div>
+        </div>
+        <div role="tabpanel" class="tab-pane<%= params['mode'].to_s=='advanced' ? ' active' : '' %>" id="advanced">
+          <div class="row">
+            <div class="col-md-6" style="margin-top: 20px;">
+              <%= form_with url: submit_path do |form| %>
+              <%= form.hidden_field :mode, value:"advanced" %>
+              <%= form.label :hash_field, t('general.hash_value') %><br>
+              <%= form.text_area :hash_field, rows: "4", style:"width: 100%", value: params[:hash].to_s %><br>
+
+              <% flash.each do |message_type, message| %>
+              <div class="alert alert-<%= message_type %>"><%= message %></div>
+              <% end %>
+
+              <%= form.button t('general.submit'), class: "btn btn-primary", style:"margin: 7px;" %>
+              <a href="/<%= I18n.locale.to_s %>" class="btn btn-default"><%= t('general.reset') %></a>
+              <% end %>
+            </div>
+            <div class="col-md-6" style="padding: 15px;">
+              <p><%= t('general.advanced_info') %></p>
+              <strong><%= t('general.calc_hash') %></strong><br>
+              <pre>cat file.dat | openssl dgst -sha256</pre>
+              <strong><%= t('general.sign_calc_hash') %></strong><br>
+              <pre>cat file.dat | \
+    gpg --detach-sig -u your.email@provider.com | \ 
+    openssl dgst -sha256</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<% if @show_response %>
+<div class="row" style="margin-top: 20px;">
+  <% if I18n.locale.to_s == "de" %>
+    <div class="col-md-12">
+      Der Hashwert <%= params[:hash] %> wurde das erste Mal am <%= @oyd_ts %> erstellt
+      <% if @root_node.to_s == "" %>
+      und wird in ca. <%= @wait %> Stunden versiegelt.
+      <% else %>
+      und am <%= @ether_ts %> versiegelt.<br><br>
+      So kannst du das Siegeldatum nachweisen:
+      <ol>
+        <li>Erstelle von der Datei den Hashwert (<%= @hash %>) - zum Beispiel <a href="https://emn178.github.io/online-tools/sha256_checksum.html" target="_blank">hier</a></li>
+        <li>Berechne mit dem Hashwert und den folgenden Werten den 
+          <a href="https://de.wikipedia.org/wiki/Merkle-Baum" target="_blank">Merkle Wurzelknoten</a> wie in <a href="https://tools.ietf.org/html/rfc6962" target="_blank">RFC 6962</a> beschrieben:<br>
+          <%= @audit_proof %><br>
+          here is a code sample that illustrates the validation process of matching <code>hash value</code> and <code>audit proof</code> against the <code>root hash</code>: <a href="https://github.com/OwnYourData/api-blockchain/blob/b3d7a23ccbe5d5df0b302d2de86afea0d9d35803/app/controllers/api/v1/docs_controller.rb#L134" target="_blank">view on Github</a>
+        </li>
+        <li>überprüfe, ob der Merkle Wurzelknoten (<%= @root_node %>) in der Ethereum Blockchain an der folgenden Adresse 
+            gespeichert ist: <%= @address[2..@address.length] %> (auf <a href="https://etherscan.io/tx/<%= @address %>" target="_blank">auf Etherscan.io anzeigen</a>)</li>
+        <li>der in der Ethereum Blockchain an der angegebenen Adresse gespeicherte Zeitstempel ist der unabhängig verifizierte Zeitpunkt für den ersten Upload der Datei / für das Siegeldatum</li>
+      </ol>
+      <button onclick="window.print();" class="btn btn-default"><i class="fa fa-print" aria-hidden="true"></i>
+        <%= t('general.print') %></a>
+      <% end %>
+    </div>
+  <% else %>
+       <div class="col-md-12">
+        The hash value <%= params[:hash] %> was created for the first time on <%= @oyd_ts %>
+        <% if @root_node.to_s == "" %>
+        and will be sealed in about <%= @wait %> hours.
+        <% else %>
+        and sealed at <%= @ether_ts %>.<br><br>
+        How to prove the seal date:
+        <ol>
+          <li>Create the hash value (<%= @hash %>) of the file - for example <a href="https://emn178.github.io/online-tools/sha256_checksum.html" target="_blank">here</a></li>
+          <li>Use the hash value and the following hashes to calculate the <a href="https://en.wikipedia.org/wiki/Merkle_tree" target="_blank">Merkle root node</a> as described in <a href="https://tools.ietf.org/html/rfc6962" target="_blank">RFC 6962</a>:<br>
+            <%= @audit_proof %></li>
+            <li>Check if the Merkle root node (<%= @root_node %>) is stored in the Ethereum blockchain at the following address: <%= @address[2..@address.length] %> (auf <a href="https://etherscan.io/tx/<%= @address %>" target="_blank">show on Etherscan.io</a>)</li>
+            <li>the timestamp stored in the Ethereum blockchain at the specified address is the independently verified time for the first upload of the file / seal date</li>
+          </ol>
+          <button onclick="window.print();" class="btn btn-default"><i class="fa fa-print" aria-hidden="true"></i>
+           <%= t('general.print') %></a>
+           <% end %>
+         </div>
+         <% end %>
+       </div>
+       <% end %>
+
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" style="margin-top: 40px;">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="blockchain_general">
+      <h2 class="panel-title">
+        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Über die Blockchain
+        </a>
+      </h2>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="blockchain_general">
+      <div class="panel-body">
+        <p>Die Blockchain sind kryptographisch miteinander verbundene und dezentral gespeicherte Datensätze. Jeder Datensatz enthält dabei einen Fingerabdruck (Hashwert) des vorhergehenden Datensatzes, einen Zeitstempel und weitere Transaktionsdaten. Dadurch, dass spätere Datensätze auf früheren Datensätzen aufbauen und diese damit als richtig bestätigen, ist es unmöglich diese früheren Daten zu ändern oder zu löschen, ohne alle darauf aufbauenden Daten ebenfalls zu ändern. Eine solche Änderung ist aber durch die verteilte Speicherung der Daten nicht möglich und würde sofort erkannt werden.</p>
+        <p>Beim Versiegeln von Dokumenten wird diese Eigenschaften der garantierten Datenintegrität einer Blockchain verwendet.</p>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="blockchain_open_source">
+      <h2 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Freier und quell-offener Blockchain Dienst
+        </a>
+      </h2>
+    </div>
+    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="blockchain_open_source">
+      <div class="panel-body">
+        <p>Der Verein zur Förderung der selbstständigen Nutzung von Daten hat es sich zum Ziel gesetzt, die selbstbestimmte Nutzung persönlicher Daten durch Privatpersonen zu fördern. Die Blockchain-Technologie ermöglicht nun auch für die private Datennutzung einen einfachen und sicheren Weg zum Nachweis von Datenintegrität und daher bietet der Verein dieses Service an. Durch die Kombination von mehreren Vorgängen - derzeit erfolgt die Gruppierung pro Tag - können die dafür notwendigen Transaktionskosten gering gehalten werden und sind durch das Vereinsbudget abgedeckt.</p>
+        <p>Auf Github ist der Quellcode für diese Webseite unter der MIT-Lizenz frei verfügbar: <a href="https://github.com/OwnYourData/app-seal">https://github.com/OwnYourData/app-seal</a></p>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="blockchain_api">
+      <h2 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          Blockchain API
+        </a>
+      </h2>
+    </div>
+    <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="blockchain_api">
+      <div class="panel-body">
+        <p>Der Dienst zum Versiegeln von Dokumenten verwendet im Hintergrund eine frei zugängliche API, die ebenfalls von anderen Diensten genutzt werden kann. Mittels HTTP POST Request kann ein Hashwert sowohl in die Blockchain geschrieben werden, oder - wenn der Hashwert zuvor bereits verwendet wurde - wird die Adresse in der Blockchain zurückgegeben. Da alle Hashwerte eines Tages in einem Merkle-Baum kombiniert werden, ist neben der Adresse in der Blockchain auch der Audit-Proof wie in <a href="https://tools.ietf.org/html/rfc6962">RFC 6962</a> angegeben.</p>
+        <p>Diese API ist mittels Swagger hier beschrieben (nur in englischer Sprache): <a href="https://blockchain.ownyourdata.eu/doc">https://blockchain.ownyourdata.eu/doc</a><br>
+        Auf Github ist der Quellcode für das API-Service unter der MIT-Lizenz frei verfügbar:</p>
+        <ul>
+          <li>High-level API: <a href="https://github.com/OwnYourData/api-blockchain">https://github.com/OwnYourData/api-blockchain</a></li>
+          <li>Blockchain Service: <a href="https://github.com/OwnYourData/srv-blockchain">https://github.com/OwnYourData/srv-blockchain</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="blockchain_api_samples">
+      <h2 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+          Blockchain API Beispiele
+        </a>
+      </h2>
+    </div>
+    <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="blockchain_api_samples">
+      <div class="panel-body">
+        <p>Verwende den folgenden Aufruf, um einen Hashwert mittels API in der Blockchain zu speichern:<br>
+          <pre>$ curl -X POST "https://blockchain.ownyourdata.eu/api/doc?hash=a955f04c736f78474999901fd78d043a72969c0b0006b104fb55b1e255ac4b58"</pre></p>
+        <p>Beim ersten Aufruf wird folgende JSON-Struktur als Rückgabewert geliefert:<br>
+          <pre>{
+  "status": "new",
+  "address": "",
+  "root-node": "",
+  "audit-proof": [],
+  "ether-timestamp": "",
+  "oyd-timestamp": "2018-09-01T22:39:16Z"
+}</pre></p>
+        <p>Sobald alle eingegangenen Hashwerte eines Tages tatsächlich in die Blockchain geschrieben wurden, enthält der Rückgabewert folgende weitere Informationen:<br>
+          <pre>{
+  "status": "exist",
+  "address": "0xcf4a0cf4b9ea6d10c0407680fe1f73df1a59c362db29a1863e14d85fcdb69c9c",
+  "root-node": "10611bc55c740b46517ce15ad82b79350468affc4660379771475eaa494ec3fd",
+  "audit-proof": "+661eec906b6a88b3bf751d7f5c62b84de03fadaed78e9398efebf408b2a3236c,
+                  -0cdf07531250367444ae8a3bfcbb0b928e1313ece65f2a45abcc2226e278d6cd,
+                  -5cbe1017c15d83ce8f4c02b4c1d8d2fa0c51bbe281363d98ef7dc33ffe26a072",
+  "ether-timestamp": "2018-09-02T06:00:17Z",
+  "oyd-timestamp": "2018-09-01T22:39:16Z"
+}</pre></p>
+        <p>Anmerkung: die Vorzeichen (+,-) im Feld <code>audit-proof</code> geben an, ob der jeweilige Hashwert als linker (+) oder rechter (-) Knoten bei der Überprüfung zur Berechnung des Wurzelknotens zu betrachten ist - siehe <a href="https://tools.ietf.org/html/rfc6962">RFC 6962</a>. Als Hashfunktion wird generell SHA256 verwendet.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+       <script type="text/javascript">
+// ************************ Drag and drop ***************** //
+let dropArea = document.getElementById("drop-area")
+
+// Prevent default drag behaviors
+;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+  dropArea.addEventListener(eventName, preventDefaults, false)   
+  document.body.addEventListener(eventName, preventDefaults, false)
+})
+
+// Highlight drop area when item is dragged over it
+;['dragenter', 'dragover'].forEach(eventName => {
+  dropArea.addEventListener(eventName, highlight, false)
+})
+
+;['dragleave', 'drop'].forEach(eventName => {
+  dropArea.addEventListener(eventName, unhighlight, false)
+})
+
+// Handle dropped files
+dropArea.addEventListener('drop', handleDrop, false);
+
+function preventDefaults (e) {
+  e.preventDefault()
+  e.stopPropagation()
+}
+
+function highlight(e) {
+  dropArea.classList.add('highlight')
+}
+
+function unhighlight(e) {
+  dropArea.classList.remove('highlight')
+}
+
+function handleDrop(e) {
+  console.log('here')
+  var dt = e.dataTransfer;
+  var file = dt.files[0];
+
+  handleFiles(file);
+}
+
+let uploadProgress = []
+let progressBar = document.getElementById('progress-bar')
+
+function initializeProgress(numFiles) {
+  progressBar.value = 0;
+  uploadProgress = [];
+
+  for(let i = numFiles; i > 0; i--) {
+    uploadProgress.push(0);
+  }
+}
+
+function updateProgress(fileNumber, percent) {
+  uploadProgress[fileNumber] = percent;
+  let total = uploadProgress.reduce((tot, curr) => tot + curr, 0) / uploadProgress.length;
+  progressBar.value = total;
+}
+
+function handleFiles(file) {
+  initializeProgress(1);
+  hashFile(file);
+}
+
+function arrayBufferToWordArray(ab) {
+  var i8a = new Uint8Array(ab);
+  var a = [];
+  for (var i = 0; i < i8a.length; i += 4) {
+    a.push(i8a[i] << 24 | i8a[i + 1] << 16 | i8a[i + 2] << 8 | i8a[i + 3]);
+  }
+  return CryptoJS.lib.WordArray.create(a, i8a.length);
+}
+
+function hashCalcStart() {
+  updateProgress(0, 100);
+  document.getElementById('hash-progress').style.display ="inline";
+};
+
+function hashCalcEnd() {
+  initializeProgress(1);
+  document.getElementById('hash-progress').style.display ="none";
+};
+
+
+function hashFile(file) {
+  // let textType = /text.*/;
+  var reader = new FileReader();
+
+  reader.onprogress = function(event) {
+    if (event.lengthComputable) {
+      updateProgress(0, (event.loaded * 100.0 / event.total) || 100);
+    }
+  };
+
+  reader.onloadend = (function(theFile) {
+    return function(evt) {
+      hashCalcStart();
+      setTimeout(function() {
+        var arrayBuffer = evt.target.result;
+        var hash_div = document.getElementById("hash");
+
+        var hash = CryptoJS.SHA256(arrayBufferToWordArray(arrayBuffer));
+        document.getElementById("hash").innerHTML = "<%= t('general.fingerprint_info') %>" + theFile.name + ": " + hash;
+        console.log("hash of " + theFile.name + ": " + hash);
+        document.getElementById("hash_field").value = hash;
+        hashCalcEnd();
+      }, 100);
+    };
+
+  })(file);
+  reader.onerror = function(e) {
+    console.error(e);
+  };
+  reader.readAsArrayBuffer(file);
+}
+</script>
