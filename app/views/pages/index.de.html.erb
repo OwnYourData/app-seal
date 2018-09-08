@@ -84,7 +84,7 @@
         <li>Berechne mit dem Hashwert und den folgenden Werten den 
           <a href="https://de.wikipedia.org/wiki/Merkle-Baum" target="_blank">Merkle Wurzelknoten</a> wie in <a href="https://tools.ietf.org/html/rfc6962" target="_blank">RFC 6962</a> beschrieben:<br>
           <%= @audit_proof %><br>
-          here is a code sample that illustrates the validation process of matching <code>hash value</code> and <code>audit proof</code> against the <code>root hash</code>: <a href="https://github.com/OwnYourData/api-blockchain/blob/b3d7a23ccbe5d5df0b302d2de86afea0d9d35803/app/controllers/api/v1/docs_controller.rb#L134" target="_blank">view on Github</a>
+          here is a code sample that illustrates the validation process of matching <code>hash value</code> and <code>audit proof</code> against the <code>root hash</code>: <a href="https://github.com/OwnYourData/api-blockchain/blob/5c09f91617d3905533edd963617eca603d3e278c/app/controllers/api/v1/docs_controller.rb#L124" target="_blank">view on Github</a>
         </li>
         <li>überprüfe, ob der Merkle Wurzelknoten (<%= @root_node %>) in der Ethereum Blockchain an der folgenden Adresse 
             gespeichert ist: <%= @address[2..@address.length] %> (auf <a href="https://etherscan.io/tx/<%= @address %>" target="_blank">auf Etherscan.io anzeigen</a>)</li>
