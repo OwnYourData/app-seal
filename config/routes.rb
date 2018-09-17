@@ -3,6 +3,7 @@ Rails.application.routes.draw do
 		root  'pages#index'
 		get   'favicon',    to: 'pages#favicon'
 		match '/submit',    to: 'pages#submit', via: 'post'
+		match '/merkle',    to: 'pages#merkle', via: 'post'
 		match 'faq',        to: 'pages#faq',    via: 'get'
 	end
 end

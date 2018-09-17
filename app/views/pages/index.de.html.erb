@@ -12,13 +12,13 @@
   <div class="col-md-12">
     <div>
       <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="<%= params['mode'].to_s!='advanced' ? ' active' : '' %>"><a href="#basic" aria-controls="basic" role="tab" data-toggle="tab"><%= t('general.basic_tab') %></a></li>
+        <li role="presentation" class="<%= (params['mode'].to_s!='advanced' && params['mode'].to_s!='verify') ? ' active' : '' %>"><a href="#basic" aria-controls="basic" role="tab" data-toggle="tab"><%= t('general.basic_tab') %></a></li>
         <li role="presentation" class="<%= params['mode'].to_s=='advanced' ? ' active' : '' %>"><a href="#advanced" aria-controls="advanced" role="tab" data-toggle="tab"><%= t('general.advanced_tab') %></a></li>
+        <li role="presentation" class="<%= params['mode'].to_s=='verify' ? ' active' : '' %>"><a href="#verify" aria-controls="verify" role="tab" data-toggle="tab"><%= t('general.verify_tab') %></a></li>
       </ul>
       <div class="tab-content">
-        <div role="tabpanel" class="tab-pane<%= params[:mode].to_s!='advanced' ? ' active' : '' %>" id="basic">
+        <div role="tabpanel" class="tab-pane<%= (params['mode'].to_s!='advanced' && params['mode'].to_s!='verify') ? ' active' : '' %>" id="basic">
           <div class="col-md-6" style="margin-top: 15px;">
-
             <div id="drop-area">
               <form class="drag-form">
                 <p><%= t('general.upload_info') %></p>
@@ -31,9 +31,9 @@
           <div class="col-md-6" style="margin-top: 15px;">
             <div id="hash" style="margin: 7px; word-wrap: break-word;"></div>
             <%= form_with url: submit_path do |form| %>
-            <%= form.hidden_field :hash_field, id:"hash_field" %>
-            <%= form.button t('general.submit'), class: "btn btn-primary", style:"margin: 7px;" %>
-            <a href="/<%= I18n.locale.to_s %>" class="btn btn-default"><%= t('general.reset') %></a>
+              <%= form.hidden_field :hash_field, id:"hash_field" %>
+              <%= form.button t('general.submit'), class: "btn btn-primary", style:"margin: 7px;" %>
+              <a href="/<%= I18n.locale.to_s %>" class="btn btn-default"><%= t('general.reset') %></a>
             <% end %>
           </div>
         </div>
@@ -41,12 +41,12 @@
           <div class="row">
             <div class="col-md-6" style="margin-top: 20px;">
               <%= form_with url: submit_path do |form| %>
-              <%= form.hidden_field :mode, value:"advanced" %>
-              <%= form.label :hash_field, t('general.hash_value') %><br>
-              <%= form.text_area :hash_field, rows: "4", style:"width: 100%", value: params[:hash].to_s %><br>
+                <%= form.hidden_field :mode, value:"advanced" %>
+                <%= form.label :hash_field, t('general.hash_value') %><br>
+                <%= form.text_area :hash_field, rows: "4", style:"width: 100%", value: params[:hash].to_s %><br>
 
-              <% flash.each do |message_type, message| %>
-              <div class="alert alert-<%= message_type %>"><%= message %></div>
+                <% flash.each do |message_type, message| %>
+                <div class="alert alert-<%= message_type %>"><%= message %></div>
               <% end %>
 
               <%= form.button t('general.submit'), class: "btn btn-primary", style:"margin: 7px;" %>
@@ -64,58 +64,78 @@
             </div>
           </div>
         </div>
+        <div role="tabpanel" class="tab-pane<%= params[:mode].to_s=='verify' ? ' active' : '' %>" id="verify">
+          <div class="row">
+            <div class="col-md-12" style="margin-top: 15px;">
+              <p><%= t('general.merkle_tab_intro') %></p>
+              <%= form_with url: merkle_path do |form| %>
+                <%= form.label :hash_field_merkle, t('general.hash_value_merkle') %><br>
+                <%= form.text_field :hash_field_merkle, style:"width: 100%", value: @merkle_hash.to_s %><br>
+                <%= form.label :audit_proof_merkle, t('general.audit_proof_merkle'), style: "margin-top: 15px;" %><br>
+                <%= form.text_area :audit_proof_merkle, rows: "4", style:"width: 100%", value: @audit_proof_merkle.to_s %><br>
+                <% if @root_node_merkle.to_s != "" %>
+                    <p style="margin:15px 0 15px;"><strong><%= t('general.root_node_label') %>:</strong> <%= @root_node_merkle %></p>
+                <% end %>
+                <%= form.button t('general.calc_root'), class: "btn btn-primary", style:"margin: 7px;" %>
+                <a href="/<%= I18n.locale.to_s %>?mode=verify" class="btn btn-default"><%= t('general.reset') %></a>
+              <% end %>
+            </div>
+          </div>
+        </div>
       </div>
-
     </div>
   </div>
 </div>
+
 <% if @show_response %>
-<div class="row" style="margin-top: 20px;">
-  <% if I18n.locale.to_s == "de" %>
-    <div class="col-md-12">
-      Der Hashwert <%= params[:hash] %> wurde das erste Mal am <%= @oyd_ts %> erstellt
-      <% if @root_node.to_s == "" %>
-      und wird in ca. <%= @wait %> Stunden versiegelt.
-      <% else %>
-      und am <%= @ether_ts %> versiegelt.<br><br>
-      So kannst du das Siegeldatum nachweisen:
-      <ol>
-        <li>Erstelle von der Datei den Hashwert (<%= @hash %>) - zum Beispiel <a href="https://emn178.github.io/online-tools/sha256_checksum.html" target="_blank">hier</a></li>
-        <li>Berechne mit dem Hashwert und den folgenden Werten den 
-          <a href="https://de.wikipedia.org/wiki/Merkle-Baum" target="_blank">Merkle Wurzelknoten</a> wie in <a href="https://tools.ietf.org/html/rfc6962" target="_blank">RFC 6962</a> beschrieben:<br>
-          <%= @audit_proof %><br>
-          here is a code sample that illustrates the validation process of matching <code>hash value</code> and <code>audit proof</code> against the <code>root hash</code>: <a href="https://github.com/OwnYourData/api-blockchain/blob/5c09f91617d3905533edd963617eca603d3e278c/app/controllers/api/v1/docs_controller.rb#L124" target="_blank">view on Github</a>
-        </li>
-        <li>überprüfe, ob der Merkle Wurzelknoten (<%= @root_node %>) in der Ethereum Blockchain an der folgenden Adresse 
-            gespeichert ist: <%= @address[2..@address.length] %> (auf <a href="https://etherscan.io/tx/<%= @address %>" target="_blank">auf Etherscan.io anzeigen</a>)</li>
-        <li>der in der Ethereum Blockchain an der angegebenen Adresse gespeicherte Zeitstempel ist der unabhängig verifizierte Zeitpunkt für den ersten Upload der Datei / für das Siegeldatum</li>
-      </ol>
-      <button onclick="window.print();" class="btn btn-default"><i class="fa fa-print" aria-hidden="true"></i>
-        <%= t('general.print') %></a>
-      <% end %>
-    </div>
-  <% else %>
-       <div class="col-md-12">
-        The hash value <%= params[:hash] %> was created for the first time on <%= @oyd_ts %>
-        <% if @root_node.to_s == "" %>
-        and will be sealed in about <%= @wait %> hours.
+    <div class="row" style="margin-top: 20px;">
+        <% if I18n.locale.to_s == "de" %>
+            <div class="col-md-12">
+                Der Hashwert <%= params[:hash] %> wurde das erste Mal am <%= @oyd_ts %> erstellt
+                <% if @root_node.to_s == "" %>
+                    und wird in ca. <%= @wait %> Stunden versiegelt.
+                <% else %>
+                    und am <%= @ether_ts %> versiegelt.<br><br>
+                    So kannst du das Siegeldatum nachweisen:
+                    <ol>
+                        <li>Erstelle von der Datei den Hashwert (<%= @hash %>) - zum Beispiel <a href="https://emn178.github.io/online-tools/sha256_checksum.html" target="_blank">hier</a></li>
+                        <li>Berechne mit dem Hashwert und den folgenden Werten den 
+                        <a href="https://de.wikipedia.org/wiki/Merkle-Baum" target="_blank">Merkle Wurzelknoten</a> wie in <a href="https://tools.ietf.org/html/rfc6962" target="_blank">RFC 6962</a> beschrieben:<br>
+                        <%= @audit_proof %></li>
+                        <li>überprüfe, ob der Merkle Wurzelknoten (<%= @root_node %>) in der Ethereum Blockchain an der folgenden Adresse 
+                        gespeichert ist: <%= @address[2..@address.length] %> (auf <a href="https://etherscan.io/tx/<%= @address %>" target="_blank">auf Etherscan.io anzeigen</a>)</li>
+                        <li>der in der Ethereum Blockchain an der angegebenen Adresse gespeicherte Zeitstempel ist der unabhängig verifizierte Zeitpunkt für den ersten Upload der Datei / für das Siegeldatum</li>
+                    </ol>
+                    <button onclick="window.print();" class="btn btn-default">
+                        <i class="fa fa-print" aria-hidden="true"></i>
+                        <%= t('general.print') %>
+                    </button>
+                <% end %>
+            </div>
         <% else %>
-        and sealed at <%= @ether_ts %>.<br><br>
-        How to prove the seal date:
-        <ol>
-          <li>Create the hash value (<%= @hash %>) of the file - for example <a href="https://emn178.github.io/online-tools/sha256_checksum.html" target="_blank">here</a></li>
-          <li>Use the hash value and the following hashes to calculate the <a href="https://en.wikipedia.org/wiki/Merkle_tree" target="_blank">Merkle root node</a> as described in <a href="https://tools.ietf.org/html/rfc6962" target="_blank">RFC 6962</a>:<br>
-            <%= @audit_proof %></li>
-            <li>Check if the Merkle root node (<%= @root_node %>) is stored in the Ethereum blockchain at the following address: <%= @address[2..@address.length] %> (auf <a href="https://etherscan.io/tx/<%= @address %>" target="_blank">show on Etherscan.io</a>)</li>
-            <li>the timestamp stored in the Ethereum blockchain at the specified address is the independently verified time for the first upload of the file / seal date</li>
-          </ol>
-          <button onclick="window.print();" class="btn btn-default"><i class="fa fa-print" aria-hidden="true"></i>
-           <%= t('general.print') %></a>
-           <% end %>
-         </div>
-         <% end %>
-       </div>
-       <% end %>
+            <div class="col-md-12">
+                The hash value <%= params[:hash] %> was created for the first time on <%= @oyd_ts %>
+                <% if @root_node.to_s == "" %>
+                    and will be sealed in about <%= @wait %> hours.
+                <% else %>
+                    and sealed at <%= @ether_ts %>.<br><br>
+                    How to prove the seal date:
+                    <ol>
+                        <li>Create the hash value (<%= @hash %>) of the file - for example <a href="https://emn178.github.io/online-tools/sha256_checksum.html" target="_blank">here</a></li>
+                        <li>Use the hash value and the following hashes to calculate the <a href="https://en.wikipedia.org/wiki/Merkle_tree" target="_blank">Merkle root node</a> as described in <a href="https://tools.ietf.org/html/rfc6962" target="_blank">RFC 6962</a>:<br>
+                        <%= @audit_proof %></li>
+                        <li>Check if the Merkle root node (<%= @root_node %>) is stored in the Ethereum blockchain at the following address: <%= @address[2..@address.length] %> (auf <a href="https://etherscan.io/tx/<%= @address %>" target="_blank">show on Etherscan.io</a>)</li>
+                        <li>the timestamp stored in the Ethereum blockchain at the specified address is the independently verified time for the first upload of the file / seal date</li>
+                    </ol>
+                    <button onclick="window.print();" class="btn btn-default">
+                        <i class="fa fa-print" aria-hidden="true"></i>
+                        <%= t('general.print') %>
+                    </button>
+                <% end %>
+            </div>
+        <% end %>
+    </div>
+<% end %>
 
 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" style="margin-top: 40px;">
   <div class="panel panel-default">
@@ -201,6 +221,21 @@
   "oyd-timestamp": "2018-09-01T22:39:16Z"
 }</pre></p>
         <p>Anmerkung: die Vorzeichen (+,-) im Feld <code>audit-proof</code> geben an, ob der jeweilige Hashwert als linker (+) oder rechter (-) Knoten bei der Überprüfung zur Berechnung des Wurzelknotens zu betrachten ist - siehe <a href="https://tools.ietf.org/html/rfc6962">RFC 6962</a>. Als Hashfunktion wird generell SHA256 verwendet.</p>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="merkle_tree">
+      <h2 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+          Über Merkle Bäume
+        </a>
+      </h2>
+    </div>
+    <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="merkle_tree">
+      <div class="panel-body">
+        <p>Ein Merkle-Baum ist eine sogenannter Binärbaum, d.h., jeder Knoten besitzt höchstens 2 Kindknoten. Die Blätter sind dabei Hash-Werte und jeweils 2 benachbarte Knoten bilden einen übergeordneten Knoten. Der Hash-Wert eines Blattes, gemeinsam mit dem Audit-Proof (lt. <a href="https://tools.ietf.org/html/rfc6962">RFC 6962</a>) ergibt eindeutig die Wurzel des Merkle-Baums. Wichtig ist bei der Anwendung des Audit-Proofs die Angabe, ob es sich jeweils um den linken oder rechten Knoten im Pfad handelt.</p>
+        <p>In der vorliegenden Implementierung werden die Werte des Audit-Proofs durch + (linker Knoten) und - (rechter Knoten) gekennzeichnet. Gemeinsam mit dem Hashwert kann so der Wurzelknoten berechnet werden. Das Verfahren des Merkle Baums wird verwendet, um alle eingegangen Hash Werte eines Tages in eben diesem Binärbaum anzuordnen und dann nur den Wurzelknoten selbst in der Blockchain zu speichern.</p>
       </div>
     </div>
   </div>
