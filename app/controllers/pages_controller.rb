@@ -3,9 +3,10 @@ class PagesController < ApplicationController
 
 	def index
 		@show_response = false
+		@verify_only = false
 		if !params[:hash].nil?
 			@show_response = true
-			@hash =        params[:hash].to_s
+			@hash = params[:hash].to_s.strip
 			if DateTime.now.utc.hour > 5
 				my_time = DateTime.now.utc.end_of_day + 6.hours
 			else
@@ -14,36 +15,49 @@ class PagesController < ApplicationController
 			@wait = (my_time.utc.to_i - Time.now.utc.to_i)/3600
 			
 			api_url = "https://blockchain.ownyourdata.eu/api/doc"
-			response = HTTParty.post(api_url,
-		        headers: { 'Content-Type' => 'application/json' },
-		        body: { hash: params[:hash] }.to_json ).parsed_response
-			@id =          response["id"]
-			@address =     response["address"]
-			@root_node =   response["root-node"]
-			@audit_proof = response["audit-proof"]
-			@ether_ts =    response["ether-timestamp"]
-			@oyd_ts =      response["oyd-timestamp"]
-
-			return
+			if params[:operation].to_s == "verify"
+				response = HTTParty.post(api_url,
+			        headers: { 'Content-Type' => 'application/json' },
+			        body: { hash: @hash,
+			        		mode: "verify" }.to_json ).parsed_response
+			else
+				response = HTTParty.post(api_url,
+			        headers: { 'Content-Type' => 'application/json' },
+			        body: { hash: @hash }.to_json ).parsed_response
+			end
+			if response["status"] == "unknown"
+				@verify_only = true
+				return
+			else
+				@id =          response["id"].to_s
+				@address =     response["address"].to_s
+				@root_node =   response["root-node"].to_s
+				@audit_proof = response["audit-proof"].to_s
+				@ether_ts =    response["ether-timestamp"].to_s
+				@oyd_ts =      response["oyd-timestamp"].to_s
+				@tsr_ts =      response["tsr-timestamp"].to_s
+				@tsr =         response["tsr"].to_s
+			end
 		end
 
 		if params[:mode].to_s == "verify"
-			@merkle_hash = params["merkle_hash"].to_s
+			@merkle_hash = params["merkle_hash"].to_s.strip
 			@audit_proof_merkle = params["merkle_audit_proof"].to_s
 			@root_node_merkle = ""
 
-			if (@merkle_hash.to_s != "" && @audit_proof_merkle.to_s != "")
+			if (@merkle_hash != "" && @audit_proof_merkle.to_s != "")
 	            node = Digest::SHA256.digest("\0" + @merkle_hash)
 	            ap = @audit_proof_merkle.split(", ")
 	            ap.each do |item|
+	            	item = item.strip
 	                if item[0] == "+"
 	                    item[0] = ""
-	                    left_node = [item].pack("H*")
+	                    left_node = [item.strip].pack("H*")
 	                    right_node = node
 	                else
 	                    item[0] = ""
 	                    left_node = node
-	                    right_node = [item].pack("H*")
+	                    right_node = [item.strip].pack("H*")
 	                end
 	                node = Digest::SHA256.digest("\x01" + left_node + right_node)
 	            end
@@ -54,31 +68,68 @@ class PagesController < ApplicationController
 	end
 
 	def submit
-		hash = params[:hash_field].to_s
-		api_url = "https://blockchain.ownyourdata.eu/api/doc"
-		response = HTTParty.post(api_url,
-            headers: { 'Content-Type' => 'application/json' },
-            body: { hash: hash }.to_json )
-		if response.code.to_s == "200"
-			flash[:success] = t('general.success')
-		else
-			flash[:warning] = t('general.hash_error')
+		hash = params[:hash_field].to_s.strip
+		if hash == ""
+			hash = params[:hash_advanced].to_s.strip
 		end
-		if params[:mode].to_s == "advanced"
-			redirect_to root_path(hash: hash, mode: "advanced")
+		if hash != ""
+			api_url = "https://blockchain.ownyourdata.eu/api/doc"
+			response = HTTParty.post(api_url,
+	            headers: { 'Content-Type' => 'application/json' },
+	            body: { hash: hash,
+	                    mode: params[:api_mode] }.to_json )
+			if response.code.to_s == "200"
+				if response.parsed_response["status"].to_s == "unknown"
+					flash[:success] = t('general.verification_success')
+				else
+					flash[:success] = t('general.success')
+				end
+			else
+				flash[:warning] = t('general.hash_error')
+			end
+			if params[:mode].to_s == "advanced"
+				redirect_to root_path(hash: hash, mode: "advanced", operation: params[:api_mode])
+			else
+				redirect_to root_path(hash: hash)
+			end
 		else
-			redirect_to root_path(hash: hash)
+			if params[:mode].to_s == "advanced"
+				redirect_to root_path(mode: "advanced")
+			else
+				redirect_to root_path
+			end
 		end
 	end
 
 	def merkle
-		@my_hash = params[:hash_field_merkle].to_s
+		@my_hash = params[:hash_field_merkle].to_s.strip
 		@my_audit_proof = params[:audit_proof_merkle].to_s
 		
 		redirect_to root_path(merkle_hash: @my_hash, merkle_audit_proof: @my_audit_proof, mode: "verify")
 	end
 
 	def faq
+	end
+
+	def tsr
+		hash = params[:hash].to_s.strip
+		if hash != ""
+			api_url = "https://blockchain.ownyourdata.eu/api/doc"
+			response = HTTParty.post(api_url,
+	            headers: { 'Content-Type' => 'application/json' },
+	            body: { hash: hash,
+	                    mode: params[:api_mode] }.to_json )
+			if response.code.to_s == "200"
+				data = Base64.decode64(response.parsed_response["tsr"].to_s)
+				file = "file.tsr"
+				File.open(file, "wb"){ |f| f << data }
+				send_file( file )
+			else
+				redirect_to root_path(hash: hash)
+			end
+		else
+			redirect_to root_path(hash: hash)
+		end
 	end
 
 	def favicon

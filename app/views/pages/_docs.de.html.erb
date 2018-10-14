@@ -1,0 +1,119 @@
+<h4 style="margin: 45px 0 -25px;">Klicke auf das jeweilige Thema, um weitere Informationen zu erhalten.</h4>
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" style="margin-top: 40px;">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="blockchain_general">
+      <h2 class="panel-title">
+        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Über die Blockchain
+        </a>
+      </h2>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="blockchain_general">
+      <div class="panel-body">
+        <p>Die Blockchain sind kryptographisch miteinander verbundene und dezentral gespeicherte Datensätze. Jeder Datensatz enthält dabei einen Fingerabdruck (Hashwert) des vorhergehenden Datensatzes, einen Zeitstempel und weitere Transaktionsdaten. Dadurch, dass spätere Datensätze auf früheren Datensätzen aufbauen und diese damit als richtig bestätigen, ist es unmöglich diese früheren Daten zu ändern oder zu löschen, ohne alle darauf aufbauenden Daten ebenfalls zu ändern. Eine solche Änderung ist aber durch die verteilte Speicherung der Daten nicht möglich und würde sofort erkannt werden.</p>
+        <p>Beim Versiegeln von Dokumenten wird diese Eigenschaften der garantierten Datenintegrität einer Blockchain verwendet.</p>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="blockchain_open_source">
+      <h2 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Freier und quell-offener Blockchain Dienst
+        </a>
+      </h2>
+    </div>
+    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="blockchain_open_source">
+      <div class="panel-body">
+        <p>Der Verein zur Förderung der selbstständigen Nutzung von Daten hat es sich zum Ziel gesetzt, die selbstbestimmte Nutzung persönlicher Daten durch Privatpersonen zu fördern. Die Blockchain-Technologie ermöglicht nun auch für die private Datennutzung einen einfachen und sicheren Weg zum Nachweis von Datenintegrität und daher bietet der Verein dieses Service an. Durch die Kombination von mehreren Vorgängen - derzeit erfolgt die Gruppierung pro Tag - können die dafür notwendigen Transaktionskosten gering gehalten werden und sind durch das Vereinsbudget abgedeckt.</p>
+        <p>Auf Github ist der Quellcode für diese Webseite unter der MIT-Lizenz frei verfügbar: <a href="https://github.com/OwnYourData/app-seal">https://github.com/OwnYourData/app-seal</a></p>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="blockchain_api">
+      <h2 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          Blockchain API
+        </a>
+      </h2>
+    </div>
+    <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="blockchain_api">
+      <div class="panel-body">
+        <p>Der Dienst zum Versiegeln von Dokumenten verwendet im Hintergrund eine frei zugängliche API, die ebenfalls von anderen Diensten genutzt werden kann. Mittels HTTP POST Request kann ein Hashwert sowohl in die Blockchain geschrieben werden, oder - wenn der Hashwert zuvor bereits verwendet wurde - wird die Adresse in der Blockchain zurückgegeben. Da alle Hashwerte eines Tages in einem Merkle-Baum kombiniert werden, ist neben der Adresse in der Blockchain auch der Audit-Proof wie in <a href="https://tools.ietf.org/html/rfc6962">RFC 6962</a> angegeben.</p>
+        <p>Diese API ist mittels Swagger hier beschrieben (nur in englischer Sprache): <a href="https://blockchain.ownyourdata.eu/doc">https://blockchain.ownyourdata.eu/doc</a><br>
+        Auf Github ist der Quellcode für das API-Service unter der MIT-Lizenz frei verfügbar:</p>
+        <ul>
+          <li>High-level API: <a href="https://github.com/OwnYourData/api-blockchain">https://github.com/OwnYourData/api-blockchain</a></li>
+          <li>Blockchain Service: <a href="https://github.com/OwnYourData/srv-blockchain">https://github.com/OwnYourData/srv-blockchain</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="blockchain_api_samples">
+      <h2 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+          Blockchain API Beispiele
+        </a>
+      </h2>
+    </div>
+    <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="blockchain_api_samples">
+      <div class="panel-body">
+        <p>Verwende den folgenden Aufruf, um einen Hashwert mittels API in der Blockchain zu speichern:<br>
+          <pre>$ curl -X POST "https://blockchain.ownyourdata.eu/api/doc?hash=a955f04c736f78474999901fd78d043a72969c0b0006b104fb55b1e255ac4b58"</pre></p>
+        <p>Beim ersten Aufruf wird folgende JSON-Struktur als Rückgabewert geliefert:<br>
+          <pre>{
+  "status": "new",
+  "address": "",
+  "root-node": "",
+  "audit-proof": [],
+  "ether-timestamp": "",
+  "oyd-timestamp": "2018-09-01T22:39:16Z"
+}</pre></p>
+        <p>Sobald alle eingegangenen Hashwerte eines Tages tatsächlich in die Blockchain geschrieben wurden, enthält der Rückgabewert folgende weitere Informationen:<br>
+          <pre>{
+  "status": "exist",
+  "address": "0xcf4a0cf4b9ea6d10c0407680fe1f73df1a59c362db29a1863e14d85fcdb69c9c",
+  "root-node": "10611bc55c740b46517ce15ad82b79350468affc4660379771475eaa494ec3fd",
+  "audit-proof": "+661eec906b6a88b3bf751d7f5c62b84de03fadaed78e9398efebf408b2a3236c,
+                  -0cdf07531250367444ae8a3bfcbb0b928e1313ece65f2a45abcc2226e278d6cd,
+                  -5cbe1017c15d83ce8f4c02b4c1d8d2fa0c51bbe281363d98ef7dc33ffe26a072",
+  "ether-timestamp": "2018-09-02T06:00:17Z",
+  "oyd-timestamp": "2018-09-01T22:39:16Z"
+}</pre></p>
+        <p>Anmerkung: die Vorzeichen (+,-) im Feld <code>audit-proof</code> geben an, ob der jeweilige Hashwert als linker (+) oder rechter (-) Knoten bei der Überprüfung zur Berechnung des Wurzelknotens zu betrachten ist - siehe <a href="https://tools.ietf.org/html/rfc6962">RFC 6962</a>. Als Hashfunktion wird generell SHA256 verwendet.</p>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="merkle_tree">
+      <h2 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+          Über Merkle Bäume
+        </a>
+      </h2>
+    </div>
+    <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="merkle_tree">
+      <div class="panel-body">
+        <p>Ein Merkle-Baum ist eine sogenannter Binärbaum, d.h., jeder Knoten besitzt höchstens 2 Kindknoten. Die Blätter sind dabei Hash-Werte und jeweils 2 benachbarte Knoten bilden einen übergeordneten Knoten. Der Hash-Wert eines Blattes, gemeinsam mit dem Audit-Proof (lt. <a href="https://tools.ietf.org/html/rfc6962">RFC 6962</a>) ergibt eindeutig die Wurzel des Merkle-Baums. Wichtig ist bei der Anwendung des Audit-Proofs die Angabe, ob es sich jeweils um den linken oder rechten Knoten im Pfad handelt.</p>
+        <p>In der vorliegenden Implementierung werden die Werte des Audit-Proofs durch + (linker Knoten) und - (rechter Knoten) gekennzeichnet. Gemeinsam mit dem Hashwert kann so der Wurzelknoten berechnet werden. Das Verfahren des Merkle Baums wird verwendet, um alle eingegangen Hash Werte eines Tages in eben diesem Binärbaum anzuordnen und dann nur den Wurzelknoten selbst in der Blockchain zu speichern.</p>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="trusted_timestamp">
+      <h2 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+          Über vertrauenswürdige Zeitstempel
+        </a>
+      </h2>
+    </div>
+    <div id="collapseSix" class="panel-collapse collapse" role="tabpanel" aria-labelledby="trusted_timestamp">
+      <div class="panel-body">
+        <p>Vertrauenswürdiges Zeitstempeln ist ein Prozess, bei dem Datum und Zustand eines Dokuments sicher verfolgt werden können. Sicherheit bedeutet hier, dass niemand - nicht einmal der Besitzer des Dokuments - in der Lage ist, den Zeitstempel nach der Erstellung zu ändern. Der hier angebotene Zeitstempel folgt dem Standard <a href="https://www.ietf.org/rfc/rfc3161.txt" target="_blank">RFC 3161</a> und kann auf zeitsensible Transaktionen durch unabhängig verifizierte und überprüfbare Datums- und UTC-Koordinaten (Coordinated Universal Time) angewendet werden.</p>
+        <p>Das Hinzufügen eines vertrauenswürdigen Zeitstempels zu einem Dokument bietet ein digitales Siegel für die Datenintegrität und ein vertrauenswürdiges Datum und die Uhrzeit, zu der die Transaktion stattgefunden hat. Empfänger von Dokumenten mit einem vertrauenswürdigen Zeitstempel können überprüfen, wann das Dokument oder der Code digital signiert wurde, sowie überprüfen, ob das Dokument oder der Code nach dem Datum, für das der Zeitstempel gilt, geändert wurde.</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -20,7 +20,8 @@ RUN gem install bundler
 
 COPY . .
 
-RUN bundle update
+RUN bundle update && \
+	rm -f tmp/pids/server.pid
 
 CMD ["rails", "server", "-b", "0.0.0.0"]
 
