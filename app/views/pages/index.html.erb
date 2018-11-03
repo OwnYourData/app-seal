@@ -8,7 +8,12 @@
         <%= t('general.info').html_safe %>
       </div>
     </div>
-  <% end %>
+  <% else
+        if !flash[:warning].nil? 
+          @show_response = false %>
+          <div class="alert alert-warning"><%= flash.first.last.to_s %></div>
+     <% end
+     end %>
   <div class="col-md-12">
     <div>
       <ul class="nav nav-tabs" role="tablist">
@@ -32,9 +37,14 @@
             <div id="hash" style="margin: 7px; word-wrap: break-word;"></div>
             <%= form_with url: submit_path do |form| %>
               <%= form.hidden_field :hash_field, id:"hash_field" %>
-              <%= form.button t('general.submit'), class: "btn btn-primary", style:"margin: 7px;" %>
+              <%= form.button t('general.submit'), class: "btn btn-primary", style:"margin: 7px;", data: { "disable-with": t('general.wait') } %>
               <a href="/<%= I18n.locale.to_s %>" class="btn btn-default"><%= t('general.reset') %></a>
             <% end %>
+            <% flash.each do |message_type, message| 
+                  if message_type.to_s != "warning" %>
+                      <div class="alert alert-<%= message_type %>"><%= message %></div>
+               <% end
+               end %>
           </div>
         </div>
         <div role="tabpanel" class="tab-pane<%= params['mode'].to_s=='advanced' ? ' active' : '' %>" id="advanced" style="padding: 10px;">
@@ -56,11 +66,12 @@
                 <%= form.label :hash_advanced, t('general.hash_value') %>:<br>
                 <%= form.text_area :hash_advanced, id: "hash_advanced", rows: "3", style:"width: 100%", value: params[:hash].to_s %><br>
 
-                <% flash.each do |message_type, message| %>
-                  <div class="alert alert-<%= message_type %>"><%= message %></div>
-                <% end %>
-
-                <%= form.button t('general.submit_advanced'), class: "btn btn-primary", style:"margin: 7px;" %>
+                <% flash.each do |message_type, message| 
+                      if message_type.to_s != "warning" %>
+                          <div class="alert alert-<%= message_type %>"><%= message %></div>
+                   <% end
+                   end %>
+                <%= form.button t('general.submit_advanced'), class: "btn btn-primary", style:"margin: 7px;", data: { "disable-with": t('general.wait') } %>
                 <a href="/<%= I18n.locale.to_s %>" class="btn btn-default"><%= t('general.reset') %></a>
               <% end %>
             </div>
@@ -87,7 +98,7 @@
                 <% if @root_node_merkle.to_s != "" %>
                     <p style="margin:15px 0 15px;"><strong><%= t('general.root_node_label') %>:</strong> <%= @root_node_merkle %></p>
                 <% end %>
-                <%= form.button t('general.calc_root'), class: "btn btn-primary", style:"margin: 7px;" %>
+                <%= form.button t('general.calc_root'), class: "btn btn-primary", style:"margin: 7px;", data: { "disable-with": t('general.wait') } %>
                 <a href="/<%= I18n.locale.to_s %>?mode=verify" class="btn btn-default"><%= t('general.reset') %></a>
               <% end %>
             </div>
@@ -107,11 +118,11 @@
                 <% else %>
                     Informationen zu Hashwert <code><%= params[:hash] %></code>
                     <ul>
-                        <li>wurde am <%= @oyd_ts %> auf dieser Webseite erstellt</li>
+                        <li>wurde am <span id="oyd_ts"></span> auf dieser Webseite erstellt</li>
                         <% if @root_node.to_s == "" %>
                             <li>wird in ca. <%= @wait %> Stunden in <a href="https://de.wikipedia.org/wiki/Ethereum" target="_blank">Ethereum</a> gespeichert</li>
                         <% else %>
-                            <li>wurde am <%= @ether_ts %> in <a href="https://de.wikipedia.org/wiki/Ethereum" target="_blank">Ethereum</a> gespeichert - <a class="collapsed" data-toggle="collapse" href="#hintBlockchain" aria-expanded="false" aria-controls="hintBlockchain">Anleitung zur Überprüfung</a>
+                            <li>wurde <% if @ether_ts.to_s != "" %>am <span id="ether_ts"></span><% end %> in <a href="https://de.wikipedia.org/wiki/Ethereum" target="_blank">Ethereum</a> gespeichert - <a class="collapsed" data-toggle="collapse" href="#hintBlockchain" aria-expanded="false" aria-controls="hintBlockchain">Anleitung zur Überprüfung</a>
                                 <div id="hintBlockchain" class="panel-collapse collapse" aria-labelledby="hintBlockchain_text">
                                     <strong>So kannst du das Datum in der Ethereum Blockchain unabhängig überprüfen:</strong>
                                     <ol>
@@ -132,7 +143,7 @@
                             </li>
                         <% end %>
                         <% if @tsr.to_s != "" %>
-                            <li>wurde am <%= @tsr_ts %> mittels <a href="https://en.wikipedia.org/wiki/Trusted_timestamping" target="_blank">digitalem Zeitstempel</a> bestätigt - <a class="collapsed" data-toggle="collapse" href="#hintTSA" aria-expanded="false" aria-controls="hintTSA">Anleitung zur Überprüfung</a>
+                            <li>wurde am <span id="tsr_ts"></span> mittels <a href="https://en.wikipedia.org/wiki/Trusted_timestamping" target="_blank">digitalem Zeitstempel</a> bestätigt - <a class="collapsed" data-toggle="collapse" href="#hintTSA" aria-expanded="false" aria-controls="hintTSA">Anleitung zur Überprüfung</a> | <%= link_to "Stempel ansehen", { controller: "pages", action: "read_tsr", hash: params[:hash].to_s }, data: { turbolinks: false } %>
                                 <div id="hintTSA" class="panel-collapse collapse" aria-labelledby="hintTSA_text">
                                     <strong>So kannst du den digitalen Zeitstempel von <a href="https://freetsa.org" target="_blank">freetsa.org</a> selbst überprüfen:</strong>
                                     <ol>
@@ -148,6 +159,18 @@
                     </ul>
                 <% end %>
             </div>
+<script type="text/javascript">
+  var ready;
+  ready = function() {
+    var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    $('#oyd_ts').html(new Date('<%= @oyd_ts %>').toLocaleTimeString('de-DE', options));
+    $('#ether_ts').html(new Date('<%= @ether_ts %>').toLocaleTimeString('de-DE', options));
+    $('#tsr_ts').html(new Date('<%= @tsr_ts %>').toLocaleTimeString('de-DE', options));
+  }
+  $(document).on('turbolinks:load', ready);
+  $(document).ready(ready);
+
+</script>
         <% else %>
             <div class="col-md-12">
                 <% if @verify_only and @root_node.to_s == "" %>
@@ -155,11 +178,11 @@
                 <% else %>
                     About hash value <code><%= params[:hash] %></code>
                     <ul>
-                        <li>at <%= @oyd_ts %> the hash value was created on this website</li>
+                        <li>at <span id="oyd_ts"></span> the hash value was created on this website</li>
                         <% if @root_node.to_s == "" %>
                             <li>will be stored in about <%= @wait %> hours in <a href="https://en.wikipedia.org/wiki/Ethereum" target="_blank">Ethereum</a></li>
                         <% else %>
-                            <li>at <%= @ether_ts %> the hash value was stored in <a href="https://en.wikipedia.org/wiki/Ethereum" target="_blank">Ethereum</a> - <a class="collapsed" data-toggle="collapse" href="#hintBlockchain" aria-expanded="false" aria-controls="hintBlockchain">Instructions for verification</a>
+                            <li><% if @ether_ts.to_s != "" %>at <span id="ether_ts"></span><% end %> the hash value was stored in <a href="https://en.wikipedia.org/wiki/Ethereum" target="_blank">Ethereum</a> - <a class="collapsed" data-toggle="collapse" href="#hintBlockchain" aria-expanded="false" aria-controls="hintBlockchain">Instructions for verification</a>
                                 <div id="hintBlockchain" class="panel-collapse collapse" aria-labelledby="hintBlockchain_text">
                                     <strong>How to independently check the date in Ethereum:</strong>
                                     <ol>
@@ -178,7 +201,7 @@
                             </li>
                         <% end %>
                         <% if @tsr.to_s != "" %>
-                            <li>at <%= @tsr_ts %> the hash value was digitally sigend with a <a href="https://en.wikipedia.org/wiki/Trusted_timestamping" target="_blank">trusted timestamp</a> - <a class="collapsed" data-toggle="collapse" href="#hintTSA" aria-expanded="false" aria-controls="hintTSA">Instructions for verification</a>
+                            <li>at <span id="tsr_ts"></span> the hash value was digitally sigend with a <a href="https://en.wikipedia.org/wiki/Trusted_timestamping" target="_blank">trusted timestamp</a> - <a class="collapsed" data-toggle="collapse" href="#hintTSA" aria-expanded="false" aria-controls="hintTSA">Instructions for verification</a> | <%= link_to "view stamp", { controller: "pages", action: "read_tsr", hash: params[:hash].to_s }, data: { turbolinks: false } %>
                                 <div id="hintTSA" class="panel-collapse collapse" aria-labelledby="hintTSA_text">
                                    <strong>How to verify the digital timestamp from <a href="https://freetsa.org" target="_blank">freetsa.org</a>:</strong>
                                     <ol>
@@ -194,6 +217,17 @@
                     </ul>
                 <% end %>
             </div>
+<script type="text/javascript">
+  var ready;
+  ready = function() {
+    var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    $('#oyd_ts').html(new Date('<%= @oyd_ts %>').toLocaleTimeString('en-US', options));
+    $('#ether_ts').html(new Date('<%= @ether_ts %>').toLocaleTimeString('en-US', options));
+    $('#tsr_ts').html(new Date('<%= @tsr_ts %>').toLocaleTimeString('en-US', options));
+  }
+  $(document).on('turbolinks:load', ready);
+  $(document).ready(ready);
+</script>
         <% end %>
     </div>
 <% end %>

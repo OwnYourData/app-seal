@@ -15,8 +15,9 @@ ENV RAILS_ROOT $WORKDIR
 RUN mkdir -p $RAILS_ROOT/tmp/pids
 COPY Gemfile /usr/src/app/
 
-RUN bundle install
-RUN gem install bundler
+RUN bundle install && \
+	bundle update && \
+	gem install bundler
 
 COPY . .
 

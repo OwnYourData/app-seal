@@ -1,6 +1,8 @@
 class PagesController < ApplicationController
 	include ApplicationHelper
-
+	
+	require 'open3'
+	
 	def index
 		@show_response = false
 		@verify_only = false
@@ -15,28 +17,40 @@ class PagesController < ApplicationController
 			@wait = (my_time.utc.to_i - Time.now.utc.to_i)/3600
 			
 			api_url = "https://blockchain.ownyourdata.eu/api/doc"
-			if params[:operation].to_s == "verify"
-				response = HTTParty.post(api_url,
-			        headers: { 'Content-Type' => 'application/json' },
-			        body: { hash: @hash,
-			        		mode: "verify" }.to_json ).parsed_response
-			else
-				response = HTTParty.post(api_url,
-			        headers: { 'Content-Type' => 'application/json' },
-			        body: { hash: @hash }.to_json ).parsed_response
+			timeout = false
+			begin
+				if params[:operation].to_s == "verify"
+					response = HTTParty.post(api_url,
+						timeout: 25,
+				        headers: { 'Content-Type' => 'application/json' },
+				        body: { hash: @hash,
+				        		mode: "verify" }.to_json ).parsed_response
+				else
+					response = HTTParty.post(api_url,
+						timeout: 25,
+				        headers: { 'Content-Type' => 'application/json' },
+				        body: { hash: @hash }.to_json ).parsed_response
+				end
+			rescue
+				timeout = true
 			end
-			if response["status"] == "unknown"
-				@verify_only = true
-				return
+			if timeout
+				flash[:warning] = t('general.service_unavailable')
+
 			else
-				@id =          response["id"].to_s
-				@address =     response["address"].to_s
-				@root_node =   response["root-node"].to_s
-				@audit_proof = response["audit-proof"].to_s
-				@ether_ts =    response["ether-timestamp"].to_s
-				@oyd_ts =      response["oyd-timestamp"].to_s
-				@tsr_ts =      response["tsr-timestamp"].to_s
-				@tsr =         response["tsr"].to_s
+				if response["status"] == "unknown"
+					@verify_only = true
+					return
+				else
+					@id =          response["id"].to_s
+					@address =     response["address"].to_s
+					@root_node =   response["root-node"].to_s
+					@audit_proof = response["audit-proof"].to_s
+					@ether_ts =    response["ether-timestamp"].to_s
+					@oyd_ts =      response["oyd-timestamp"].to_s
+					@tsr_ts =      response["tsr-timestamp"].to_s
+					@tsr =         response["tsr"].to_s
+				end
 			end
 		end
 
@@ -75,6 +89,7 @@ class PagesController < ApplicationController
 		if hash != ""
 			api_url = "https://blockchain.ownyourdata.eu/api/doc"
 			response = HTTParty.post(api_url,
+				timeout: 25,
 	            headers: { 'Content-Type' => 'application/json' },
 	            body: { hash: hash,
 	                    mode: params[:api_mode] }.to_json )
@@ -82,7 +97,11 @@ class PagesController < ApplicationController
 				if response.parsed_response["status"].to_s == "unknown"
 					flash[:success] = t('general.verification_success')
 				else
-					flash[:success] = t('general.success')
+					if params[:mode].to_s == "advanced"
+						flash[:success] = t('general.success')
+					else
+						flash[:success] = t('general.success_basic')
+					end
 				end
 			else
 				flash[:warning] = t('general.hash_error')
@@ -116,6 +135,7 @@ class PagesController < ApplicationController
 		if hash != ""
 			api_url = "https://blockchain.ownyourdata.eu/api/doc"
 			response = HTTParty.post(api_url,
+				timeout: 25,
 	            headers: { 'Content-Type' => 'application/json' },
 	            body: { hash: hash,
 	                    mode: params[:api_mode] }.to_json )
@@ -124,6 +144,28 @@ class PagesController < ApplicationController
 				file = "file.tsr"
 				File.open(file, "wb"){ |f| f << data }
 				send_file( file )
+			else
+				redirect_to root_path(hash: hash)
+			end
+		else
+			redirect_to root_path(hash: hash)
+		end
+	end
+
+	def read_tsr
+		hash = params[:hash].to_s.strip
+		if hash != ""
+			api_url = "https://blockchain.ownyourdata.eu/api/doc"
+			response = HTTParty.post(api_url,
+				timeout: 25,
+	            headers: { 'Content-Type' => 'application/json' },
+	            body: { hash: hash,
+	                    mode: params[:api_mode] }.to_json )
+			if response.code.to_s == "200"
+				out, err, status = Open3.capture3("bash", "-c", 
+                    'openssl ts -reply -in <(echo -n "' + response.parsed_response["tsr"].to_s + '" | base64 --decode) -text')
+				render plain: out.to_s,
+					   status: 200
 			else
 				redirect_to root_path(hash: hash)
 			end

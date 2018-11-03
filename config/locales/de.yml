@@ -3,7 +3,7 @@ de:
     title: "Dokument mit der Blockchain versiegeln"
     # info: "Auf dieser Webseite kannst du dir gratis einen unabhängig verifizierbaren Zeitstempel (= Siegel) für deine Dokumente erstellen. Jedes Mal wird dabei der früheste bekannte Zeitstempel des Dokuments angezeigt."
     info: |
-      Hier findest du die sicherste und gleichzeitg einfachste Form, deine Daten und Dokumente zu schützen. 
+      Hier findest du die sicherste und gleichzeitig einfachste Form, deine Daten und Dokumente zu schützen. 
       Egal ob Musikstück, Foto, Algorithmus oder sonstige schützenswerte Informationen - 
       dank Blockchain-Technologie sind deine Informationen anonym, manipulationssicher und 
       rechtlich verbindlich abgesichert.
@@ -14,6 +14,7 @@ de:
       <em><strong>Tipp für alle Neugierigen:</strong></em> Jetzt mit einem beliebigen Probedokument testen oder ein <u><a href='https://seal.ownyourdata.eu/de?hash=006748c21efaf8fe67b833d82cba7955619c3c3b06e11ed6562fbf6a1cb06f2c'>bestehendes Dokument ansehen</a></u>!
     fingerprint_info: "Fingerabdruck (Hashwert) für "
     submit: "Siegel anfordern"
+    wait: "Warten..."
     submit_advanced: "Abschicken"
     reset: "Zurücksetzen"
     print: "Informationen drucken"
@@ -34,6 +35,7 @@ de:
     advanced_info: "Mit folgenden Befehlen kannst du mit OpenSSL den Hashwert selbst berechnen und eine Datei zum Nachweis signieren."
     calc_hash: "Hashwert berechnen"
     sign_calc_hash: "Datei signieren und Hashwert berechnen"
+    success_basic: "Das Siegel wurde erfolgreich erstellt und detaillierte Informationen sind unten angeführt."
     success: "Hashwert erfolgreich an Blockchain übergeben"
     verification_success: "Hashwert erfolgreich abgefragt"
     hash_error: "Fehler: ungültiger Hashwert"
@@ -41,6 +43,7 @@ de:
     merkle_tab_intro: "Verwende dieses Formular, um den Wurzelknoten eines Merkle Baums anhand von Hashwert und Audit Proof zu berechnen."
     root_node_label: "Wurzelknoten"
     api_mode: "Modus"
+    service_unavailable: "Es tut uns leid, aber etwas ist schief gelaufen. Bitte versuche es in ein paar Minuten erneut!"
     mode:
       verify: "nur prüfen"
       default: "Standard (prüfen und anlegen)"
