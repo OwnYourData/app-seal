@@ -137,7 +137,7 @@
                                           <% if @audit_proof.to_s != "[]" %>
                                             <li>Berechne mit dem Hashwert und den folgenden Werten den 
                                             <a href="https://de.wikipedia.org/wiki/Merkle-Baum" target="_blank">Merkle Wurzelknoten</a> wie in <a href="https://tools.ietf.org/html/rfc6962" target="_blank">RFC 6962</a> beschrieben:<br>
-                                            -<%= @audit_proof.to_s %>-</li>
+                                            <%= @audit_proof.to_s %></li>
                                           <% end %>
                                           <li>überprüfe, ob dieser Wert (<%= @root_node %>) in der ARTIS Blockchain an der folgenden Adresse 
                                           gespeichert ist: <%= @address[2..@address.length] %> (im <a href="https://explorer.sigma1.artis.network/tx/<%= @address %>/internal_transactions" target="_blank">ARTIS Explorer anzeigen</a>)</li>
@@ -159,7 +159,7 @@
                                           <% if @audit_proof.to_s != "[]" %>
                                               <li>Berechne mit dem Hashwert und den folgenden Werten den 
                                               <a href="https://de.wikipedia.org/wiki/Merkle-Baum" target="_blank">Merkle Wurzelknoten</a> wie in <a href="https://tools.ietf.org/html/rfc6962" target="_blank">RFC 6962</a> beschrieben:<br>
-                                              -<%= @audit_proof.to_s %>-</li>
+                                              <%= @audit_proof.to_s %></li>
                                           <% end %>
                                           <li>überprüfe, ob dieser Wert (<%= @root_node %>) in der Ethereum Blockchain an der folgenden Adresse 
                                           gespeichert ist: <%= @address[2..@address.length] %> (auf <a href="https://etherscan.io/tx/<%= @address %>" target="_blank">auf Etherscan.io anzeigen</a>)</li>
@@ -281,7 +281,7 @@
                                             <li>Create the hash value (<%= @hash %>) of the file - for example <a href="https://emn178.github.io/online-tools/sha256_checksum.html" target="_blank">here</a></li>
                                             <% if @audit_proof.to_s != "[]" %>
                                                 <li>Use the hash value and the following hashes to calculate the <a href="https://en.wikipedia.org/wiki/Merkle_tree" target="_blank">Merkle root node</a> as described in <a href="https://tools.ietf.org/html/rfc6962" target="_blank">RFC 6962</a>:<br>
-                                                -<%= @audit_proof.to_s %>-</li>
+                                                <%= @audit_proof.to_s %></li>
                                             <% end %>
                                             <li>Check if this value (<%= @root_node %>) is stored in the Ethereum blockchain at the following address: <%= @address[2..@address.length] %> (<a href="https://etherscan.io/tx/<%= @address %>" target="_blank">show on Etherscan.io</a>)</li>
                                             <li>the timestamp stored in the Ethereum blockchain at the specified address is the independently verified time for the first upload of the file</li>
