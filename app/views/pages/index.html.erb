@@ -5,7 +5,7 @@
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
-        <%= t('general.info').html_safe %>
+        <%= t('general.info' + ENV["BLOCKCHAIN"]).html_safe %>
       </div>
     </div>
   <% else
@@ -120,27 +120,59 @@
                     <ul>
                         <li>wurde am <span id="oyd_ts"></span> auf dieser Webseite erstellt</li>
                         <% if @root_node.to_s == "" %>
-                            <li>wird in ca. <%= @wait %> Stunden in <a href="https://de.wikipedia.org/wiki/Ethereum" target="_blank">Ethereum</a> gespeichert</li>
+                            <% case  ENV["BLOCKCHAIN"] %>
+                            <% when "ARTIS" %>
+                              <li>wird in den nächsten Minuten in <a href="https://artis.eco/en/" target="_blank">ARTIS</a> gespeichert</li>
+                            <% else %>
+                              <li>wird in ca. <%= @wait %> Stunden in <a href="https://de.wikipedia.org/wiki/Ethereum" target="_blank">Ethereum</a> gespeichert</li>
+                            <% end %>
                         <% else %>
-                            <li>wurde <% if @ether_ts.to_s != "" %>am <span id="ether_ts"></span><% end %> in <a href="https://de.wikipedia.org/wiki/Ethereum" target="_blank">Ethereum</a> gespeichert - <a class="collapsed" data-toggle="collapse" href="#hintBlockchain" aria-expanded="false" aria-controls="hintBlockchain">Anleitung zur Überprüfung</a>
-                                <div id="hintBlockchain" class="panel-collapse collapse" aria-labelledby="hintBlockchain_text">
-                                    <strong>So kannst du das Datum in der Ethereum Blockchain unabhängig überprüfen:</strong>
-                                    <ol>
-                                        <li>Erstelle von der Datei den Hashwert (<%= @hash %>) - zum Beispiel <a href="https://emn178.github.io/online-tools/sha256_checksum.html" target="_blank">hier</a></li>
-                                        <li>Berechne mit dem Hashwert und den folgenden Werten den 
-                                        <a href="https://de.wikipedia.org/wiki/Merkle-Baum" target="_blank">Merkle Wurzelknoten</a> wie in <a href="https://tools.ietf.org/html/rfc6962" target="_blank">RFC 6962</a> beschrieben:<br>
-                                        <%= @audit_proof %></li>
-                                        <li>überprüfe, ob der Merkle Wurzelknoten (<%= @root_node %>) in der Ethereum Blockchain an der folgenden Adresse 
-                                        gespeichert ist: <%= @address[2..@address.length] %> (auf <a href="https://etherscan.io/tx/<%= @address %>" target="_blank">auf Etherscan.io anzeigen</a>)</li>
-                                        <li>der in der Ethereum Blockchain an der angegebenen Adresse gespeicherte Zeitstempel ist der unabhängig verifizierte Zeitpunkt für die Existenz der Datei</li>
-                                    </ol>
-                                    <button onclick="window.print();" class="btn btn-default" style="margin-top: 10px;">
-                                        <i class="fa fa-print" aria-hidden="true"></i>
-                                        <%= t('general.print') %>
-                                    </button>
-                                    <p>&nbsp;</p>
-                                </div>
-                            </li>
+                            <% case  ENV["BLOCKCHAIN"] %>
+                            <% when "ARTIS" %>
+                              <li>wurde <% if @ether_ts.to_s != "" %>am <span id="ether_ts"></span><% end %> in <a href="https://artis.eco/en/" target="_blank">ARTIS</a> gespeichert - <a class="collapsed" data-toggle="collapse" href="#hintBlockchain" aria-expanded="false" aria-controls="hintBlockchain">Anleitung zur Überprüfung</a>
+                                  <div id="hintBlockchain" class="panel-collapse collapse" aria-labelledby="hintBlockchain_text">
+                                      <strong>So kannst du das Datum in der ARTIS Blockchain unabhängig überprüfen:</strong>
+                                      <ol>
+                                          <li>Erstelle von der Datei den Hashwert (<%= @hash %>) - zum Beispiel <a href="https://emn178.github.io/online-tools/sha256_checksum.html" target="_blank">hier</a></li>
+                                          <% if @audit_proof.to_s != "[]" %>
+                                            <li>Berechne mit dem Hashwert und den folgenden Werten den 
+                                            <a href="https://de.wikipedia.org/wiki/Merkle-Baum" target="_blank">Merkle Wurzelknoten</a> wie in <a href="https://tools.ietf.org/html/rfc6962" target="_blank">RFC 6962</a> beschrieben:<br>
+                                            -<%= @audit_proof.to_s %>-</li>
+                                          <% end %>
+                                          <li>überprüfe, ob dieser Wert (<%= @root_node %>) in der ARTIS Blockchain an der folgenden Adresse 
+                                          gespeichert ist: <%= @address[2..@address.length] %> (im <a href="https://explorer.sigma1.artis.network/tx/<%= @address %>/internal_transactions" target="_blank">ARTIS Explorer anzeigen</a>)</li>
+                                          <li>der in der Ethereum Blockchain an der angegebenen Adresse gespeicherte Zeitstempel ist der unabhängig verifizierte Zeitpunkt für die Existenz der Datei</li>
+                                      </ol>
+                                      <button onclick="window.print();" class="btn btn-default" style="margin-top: 10px;">
+                                          <i class="fa fa-print" aria-hidden="true"></i>
+                                          <%= t('general.print') %>
+                                      </button>
+                                      <p>&nbsp;</p>
+                                  </div>
+                              </li>                            
+                            <% else %>
+                              <li>wurde <% if @ether_ts.to_s != "" %>am <span id="ether_ts"></span><% end %> in <a href="https://de.wikipedia.org/wiki/Ethereum" target="_blank">Ethereum</a> gespeichert - <a class="collapsed" data-toggle="collapse" href="#hintBlockchain" aria-expanded="false" aria-controls="hintBlockchain">Anleitung zur Überprüfung</a>
+                                  <div id="hintBlockchain" class="panel-collapse collapse" aria-labelledby="hintBlockchain_text">
+                                      <strong>So kannst du das Datum in der Ethereum Blockchain unabhängig überprüfen:</strong>
+                                      <ol>
+                                          <li>Erstelle von der Datei den Hashwert (<%= @hash %>) - zum Beispiel <a href="https://emn178.github.io/online-tools/sha256_checksum.html" target="_blank">hier</a></li>
+                                          <% if @audit_proof.to_s != "[]" %>
+                                              <li>Berechne mit dem Hashwert und den folgenden Werten den 
+                                              <a href="https://de.wikipedia.org/wiki/Merkle-Baum" target="_blank">Merkle Wurzelknoten</a> wie in <a href="https://tools.ietf.org/html/rfc6962" target="_blank">RFC 6962</a> beschrieben:<br>
+                                              -<%= @audit_proof.to_s %>-</li>
+                                          <% end %>
+                                          <li>überprüfe, ob dieser Wert (<%= @root_node %>) in der Ethereum Blockchain an der folgenden Adresse 
+                                          gespeichert ist: <%= @address[2..@address.length] %> (auf <a href="https://etherscan.io/tx/<%= @address %>" target="_blank">auf Etherscan.io anzeigen</a>)</li>
+                                          <li>der in der Ethereum Blockchain an der angegebenen Adresse gespeicherte Zeitstempel ist der unabhängig verifizierte Zeitpunkt für die Existenz der Datei</li>
+                                      </ol>
+                                      <button onclick="window.print();" class="btn btn-default" style="margin-top: 10px;">
+                                          <i class="fa fa-print" aria-hidden="true"></i>
+                                          <%= t('general.print') %>
+                                      </button>
+                                      <p>&nbsp;</p>
+                                  </div>
+                              </li>
+                            <% end %>
                         <% end %>
                         <% if @tsr.to_s != "" %>
                             <li>wurde am <span id="tsr_ts"></span> mittels <a href="https://en.wikipedia.org/wiki/Trusted_timestamping" target="_blank">digitalem Zeitstempel</a> bestätigt - <a class="collapsed" data-toggle="collapse" href="#hintTSA" aria-expanded="false" aria-controls="hintTSA">Anleitung zur Überprüfung</a> | <%= link_to "Stempel ansehen", { controller: "pages", action: "read_tsr", hash: params[:hash].to_s }, data: { turbolinks: false } %>
@@ -156,6 +188,40 @@
                                 </div>
                             </li>
                         <% end %>
+                        <% if @url.to_s != "" %>
+                            <li>Link zu Dokument: <a href="<%= @url.to_s %>" target="_blank"><%= @url.to_s %></a></li>
+                        <% end %>
+                        <% if @did.to_s != "" %>
+                            <li>DID: <em><%= @did.to_s %></em>
+                            <% if @history.count > 1 %>
+                                <br>frühere Versionen:
+                                <ol>
+                                    <% @history.each do |item| %>
+                                        <li>
+                                            <% if item[1].to_s == params[:hash].to_s %>
+                                                <span id="<%= item[1].to_s %>_ts"></span> <em>(aktuelle Version)</em>
+                                            <% else %>
+                                                <a href="/de?hash=<%= item[1].to_s %>"><span id="<%= item[1].to_s %>_ts"></span></a>
+                                            <% end %>
+                                        </li>
+<script type="text/javascript">
+  var ready;
+  ready = function() {
+    var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    $('#<%= item[1].to_s %>_ts').html(new Date('<%= item[0].to_s %>').toLocaleTimeString('de-DE', options));
+  }
+  $(document).on('turbolinks:load', ready);
+  $(document).ready(ready);
+</script>
+
+                                    <% end %>
+                                </ol>
+                            <% end %>
+                            </li>
+                        <% end %>
+                        <% if @note.to_s != "" %>
+                            <li><%= @note.to_s %></li>
+                        <% end %>
                     </ul>
                 <% end %>
             </div>
@@ -169,7 +235,6 @@
   }
   $(document).on('turbolinks:load', ready);
   $(document).ready(ready);
-
 </script>
         <% else %>
             <div class="col-md-12">
@@ -180,25 +245,55 @@
                     <ul>
                         <li>at <span id="oyd_ts"></span> the hash value was created on this website</li>
                         <% if @root_node.to_s == "" %>
-                            <li>will be stored in about <%= @wait %> hours in <a href="https://en.wikipedia.org/wiki/Ethereum" target="_blank">Ethereum</a></li>
+                            <% case  ENV["BLOCKCHAIN"] %>
+                            <% when "ARTIS" %>
+                              <li>will be stored within a few minutes in <a href="https://artis.eco/en/" target="_blank">ARTIS</a></li>
+                            <% else %>
+                              <li>will be stored in about <%= @wait %> hours in <a href="https://en.wikipedia.org/wiki/Ethereum" target="_blank">Ethereum</a></li>
+                            <% end %>
                         <% else %>
-                            <li><% if @ether_ts.to_s != "" %>at <span id="ether_ts"></span><% end %> the hash value was stored in <a href="https://en.wikipedia.org/wiki/Ethereum" target="_blank">Ethereum</a> - <a class="collapsed" data-toggle="collapse" href="#hintBlockchain" aria-expanded="false" aria-controls="hintBlockchain">Instructions for verification</a>
-                                <div id="hintBlockchain" class="panel-collapse collapse" aria-labelledby="hintBlockchain_text">
-                                    <strong>How to independently check the date in Ethereum:</strong>
-                                    <ol>
-                                        <li>Create the hash value (<%= @hash %>) of the file - for example <a href="https://emn178.github.io/online-tools/sha256_checksum.html" target="_blank">here</a></li>
-                                        <li>Use the hash value and the following hashes to calculate the <a href="https://en.wikipedia.org/wiki/Merkle_tree" target="_blank">Merkle root node</a> as described in <a href="https://tools.ietf.org/html/rfc6962" target="_blank">RFC 6962</a>:<br>
-                                        <%= @audit_proof %></li>
-                                        <li>Check if the Merkle root node (<%= @root_node %>) is stored in the Ethereum blockchain at the following address: <%= @address[2..@address.length] %> (auf <a href="https://etherscan.io/tx/<%= @address %>" target="_blank">show on Etherscan.io</a>)</li>
-                                        <li>the timestamp stored in the Ethereum blockchain at the specified address is the independently verified time for the first upload of the file</li>
-                                    </ol>
-                                    <button onclick="window.print();" class="btn btn-default">
-                                        <i class="fa fa-print" aria-hidden="true"></i>
-                                        <%= t('general.print') %>
-                                    </button>
-                                    <p>&nbsp;</p>
-                                </div>
-                            </li>
+                            <% case  ENV["BLOCKCHAIN"] %>
+                            <% when "ARTIS" %>
+                                <li><% if @ether_ts.to_s != "" %>at <span id="ether_ts"></span><% end %> the hash value was stored in <a href="https://artis.eco/en/" target="_blank">ARTIS</a> - <a class="collapsed" data-toggle="collapse" href="#hintBlockchain" aria-expanded="false" aria-controls="hintBlockchain">Instructions for verification</a>
+                                    <div id="hintBlockchain" class="panel-collapse collapse" aria-labelledby="hintBlockchain_text">
+                                        <strong>How to independently check the date in ARTIS:</strong>
+                                        <ol>
+                                            <li>Create the hash value (<%= @hash %>) of the file - for example <a href="https://emn178.github.io/online-tools/sha256_checksum.html" target="_blank">here</a></li>
+                                            <% if @audit_proof.to_s != "[]" %>
+                                                <li>Use the hash value and the following hashes to calculate the <a href="https://en.wikipedia.org/wiki/Merkle_tree" target="_blank">Merkle root node</a> as described in <a href="https://tools.ietf.org/html/rfc6962" target="_blank">RFC 6962</a>:<br>
+                                                -<%= @audit_proof.to_s %></li>
+                                            <% end %>
+                                            <li>Check if this value (<%= @root_node %>) is stored in the ARTIS blockchain at the following address: <%= @address[2..@address.length] %> (<a href="https://explorer.sigma1.artis.network/tx/<%= @address %>/internal_transactions" target="_blank">show in ARTIS Explorer</a>)</li>
+                                            <li>the timestamp stored in the Ethereum blockchain at the specified address is the independently verified time for the first upload of the file</li>
+                                        </ol>
+                                        <button onclick="window.print();" class="btn btn-default">
+                                            <i class="fa fa-print" aria-hidden="true"></i>
+                                            <%= t('general.print') %>
+                                        </button>
+                                        <p>&nbsp;</p>
+                                    </div>
+                                </li>
+                            <% else %>                     
+                                <li><% if @ether_ts.to_s != "" %>at <span id="ether_ts"></span><% end %> the hash value was stored in <a href="https://en.wikipedia.org/wiki/Ethereum" target="_blank">Ethereum</a> - <a class="collapsed" data-toggle="collapse" href="#hintBlockchain" aria-expanded="false" aria-controls="hintBlockchain">Instructions for verification</a>
+                                    <div id="hintBlockchain" class="panel-collapse collapse" aria-labelledby="hintBlockchain_text">
+                                        <strong>How to independently check the date in Ethereum:</strong>
+                                        <ol>
+                                            <li>Create the hash value (<%= @hash %>) of the file - for example <a href="https://emn178.github.io/online-tools/sha256_checksum.html" target="_blank">here</a></li>
+                                            <% if @audit_proof.to_s != "[]" %>
+                                                <li>Use the hash value and the following hashes to calculate the <a href="https://en.wikipedia.org/wiki/Merkle_tree" target="_blank">Merkle root node</a> as described in <a href="https://tools.ietf.org/html/rfc6962" target="_blank">RFC 6962</a>:<br>
+                                                -<%= @audit_proof.to_s %>-</li>
+                                            <% end %>
+                                            <li>Check if this value (<%= @root_node %>) is stored in the Ethereum blockchain at the following address: <%= @address[2..@address.length] %> (<a href="https://etherscan.io/tx/<%= @address %>" target="_blank">show on Etherscan.io</a>)</li>
+                                            <li>the timestamp stored in the Ethereum blockchain at the specified address is the independently verified time for the first upload of the file</li>
+                                        </ol>
+                                        <button onclick="window.print();" class="btn btn-default">
+                                            <i class="fa fa-print" aria-hidden="true"></i>
+                                            <%= t('general.print') %>
+                                        </button>
+                                        <p>&nbsp;</p>
+                                    </div>
+                                </li>
+                            <% end %>
                         <% end %>
                         <% if @tsr.to_s != "" %>
                             <li>at <span id="tsr_ts"></span> the hash value was digitally sigend with a <a href="https://en.wikipedia.org/wiki/Trusted_timestamping" target="_blank">trusted timestamp</a> - <a class="collapsed" data-toggle="collapse" href="#hintTSA" aria-expanded="false" aria-controls="hintTSA">Instructions for verification</a> | <%= link_to "view stamp", { controller: "pages", action: "read_tsr", hash: params[:hash].to_s }, data: { turbolinks: false } %>
@@ -213,6 +308,40 @@
                                     </ol>
                                 </div>
                             </li>
+                        <% end %>
+                        <% if @url.to_s != "" %>
+                            <li>Link to document: <a href="<%= @url.to_s %>" target="_blank"><%= @url.to_s %></a></li>
+                        <% end %>
+                        <% if @did.to_s != "" %>
+                            <li>DID: <em><%= @did.to_s %></em>
+                            <% if @history.count > 1 %>
+                                <br>previous versions:
+                                <ol>
+                                    <% @history.each do |item| %>
+                                        <li>
+                                            <% if item[1].to_s == params[:hash].to_s %>
+                                                <span id="<%= item[1].to_s %>_ts"></span> <em>(current version)</em>
+                                            <% else %>
+                                                <a href="/de?hash=<%= item[1].to_s %>"><span id="<%= item[1].to_s %>_ts"></span></a>
+                                            <% end %>
+                                        </li>
+<script type="text/javascript">
+  var ready;
+  ready = function() {
+    var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    $('#<%= item[1].to_s %>_ts').html(new Date('<%= item[0].to_s %>').toLocaleTimeString('en-US', options));
+  }
+  $(document).on('turbolinks:load', ready);
+  $(document).ready(ready);
+</script>
+
+                                    <% end %>
+                                </ol>
+                            <% end %>
+                            </li>
+                        <% end %>
+                        <% if @note.to_s != "" %>
+                            <li><%= @note.to_s %></li>
                         <% end %>
                     </ul>
                 <% end %>
@@ -232,7 +361,7 @@
     </div>
 <% end %>
 
-<%= render 'pages/docs' %>
+<%= render 'pages/docs' + ENV["BLOCKCHAIN"] %>
 
 <script type="text/javascript">
     $('.selectpicker').selectpicker('refresh');

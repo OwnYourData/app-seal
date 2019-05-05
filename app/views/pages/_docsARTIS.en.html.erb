@@ -16,6 +16,20 @@
     </div>
   </div>
   <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="blockchain_ARTIS">
+      <h2 class="panel-title">
+        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOneARTIS" aria-expanded="true" aria-controls="collapseOneARTIS">
+          About ARTIS
+        </a>
+      </h2>
+    </div>
+    <div id="collapseOneARTIS" class="panel-collapse collapse" role="tabpanel" aria-labelledby="blockchain_ARTIS">
+      <div class="panel-body">
+        <p>The <a href="https://artis.eco/en/" target="_blank">ARTIS Network</a> is an easy-to-use public blockchain system that is built with sustainability in mind by doing away with energy-intensive mining. As an Ethereum sidechain, the ARTIS Network is using the performant Parity-node software which has WebAssembly enabled – allowing every smart contract to be developed with outstanding security using Rust, C or C++. Existing DApps can migrate or use several blockchains in parallel, whatever is preferred and more suitable.</p>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="blockchain_open_source">
       <h2 class="panel-title">
         <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
@@ -41,11 +55,11 @@
     <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="blockchain_api">
       <div class="panel-body">
         <p>The document sealing service uses a freely accessible API in the background, which can also be used by other services. By means of an HTTP POST request the hash value can be written to the blockchain, or - if the hash value has already been used - the address in the blockchain is returned. Since all hash values of a day are combined in a Merkle tree, the audit proof is made available in addition to the address in the blockchain (as described in <a href="https://tools.ietf.org/html/rfc6962">RFC 6962</a>).</p>
-        <p>This API is described using Swagger here: <a href="https://blockchain.ownyourdata.eu/doc">https://blockchain.ownyourdata.eu/doc</a><br>
+        <p>This API is described using Swagger here: <a href="https://artis.ownyourdata.eu/doc">https://artis.ownyourdata.eu/doc</a><br>
         On Github, the source code for the API service is freely available under the MIT license:</p>
         <ul>
           <li>high-level API: <a href="https://github.com/OwnYourData/api-blockchain">https://github.com/OwnYourData/api-blockchain</a></li>
-          <li>Blockchain service: <a href="https://github.com/OwnYourData/service-blockchain">https://github.com/OwnYourData/service-blockchain</a></li>
+          <li>Blockchain service: <a href="https://github.com/OwnYourData/service-blockchain/tree/master/docker/srv-artis">https://github.com/OwnYourData/service-blockchain/tree/master/docker/srv-artis</a></li>
         </ul>
       </div>
     </div>
@@ -61,7 +75,7 @@
     <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="blockchain_api_samples">
       <div class="panel-body">
         <p>Use the following shell command to save a hash value via API in the blockchain:<br>
-          <pre>$ curl -X POST "https://blockchain.ownyourdata.eu/api/doc?hash=006748c21efaf8fe67b833d82cba7955619c3c3b06e11ed6562fbf6a1cb06f2c"</pre></p>
+          <pre>$ curl -X POST "https://artis.ownyourdata.eu/api/doc?hash=006748c21efaf8fe67b833d82cba7955619c3c3b06e11ed6562fbf6a1cb06f2c"</pre></p>
         <p>The first call returns the following JSON structure as the return value:<br>
           <pre>{
   "status": "new",

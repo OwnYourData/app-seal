@@ -16,7 +16,12 @@ class PagesController < ApplicationController
 			end
 			@wait = (my_time.utc.to_i - Time.now.utc.to_i)/3600
 			
-			api_url = "https://blockchain.ownyourdata.eu/api/doc"
+			case ENV["BLOCKCHAIN"]
+			when "ARTIS"
+				api_url = "https://artis.ownyourdata.eu/api/doc"
+			else
+				api_url = "https://blockchain.ownyourdata.eu/api/doc"
+			end
 			timeout = false
 			begin
 				if params[:operation].to_s == "verify"
@@ -46,10 +51,14 @@ class PagesController < ApplicationController
 					@address =     response["address"].to_s
 					@root_node =   response["root-node"].to_s
 					@audit_proof = response["audit-proof"].to_s
-					@ether_ts =    response["ether-timestamp"].to_s
+					@ether_ts =    response["dlt-timestamp"].to_s
 					@oyd_ts =      response["oyd-timestamp"].to_s
 					@tsr_ts =      response["tsr-timestamp"].to_s
 					@tsr =         response["tsr"].to_s
+					@did =         response["did"].to_s
+					@history =     response["history"]
+					@url =         response["url"].to_s
+					@note =        response["note"].to_s
 				end
 			end
 		end
@@ -87,7 +96,12 @@ class PagesController < ApplicationController
 			hash = params[:hash_advanced].to_s.strip
 		end
 		if hash != ""
-			api_url = "https://blockchain.ownyourdata.eu/api/doc"
+			case ENV["BLOCKCHAIN"]
+			when "ARTIS"
+				api_url = "https://artis.ownyourdata.eu/api/doc"
+			else
+				api_url = "https://blockchain.ownyourdata.eu/api/doc"
+			end
 			response = HTTParty.post(api_url,
 				timeout: 25,
 	            headers: { 'Content-Type' => 'application/json' },
@@ -133,7 +147,12 @@ class PagesController < ApplicationController
 	def tsr
 		hash = params[:hash].to_s.strip
 		if hash != ""
-			api_url = "https://blockchain.ownyourdata.eu/api/doc"
+			case ENV["BLOCKCHAIN"]
+			when "ARTIS"
+				api_url = "https://artis.ownyourdata.eu/api/doc"
+			else
+				api_url = "https://blockchain.ownyourdata.eu/api/doc"
+			end
 			response = HTTParty.post(api_url,
 				timeout: 25,
 	            headers: { 'Content-Type' => 'application/json' },
@@ -155,7 +174,12 @@ class PagesController < ApplicationController
 	def read_tsr
 		hash = params[:hash].to_s.strip
 		if hash != ""
-			api_url = "https://blockchain.ownyourdata.eu/api/doc"
+			case ENV["BLOCKCHAIN"]
+			when "ARTIS"
+				api_url = "https://artis.ownyourdata.eu/api/doc"
+			else
+				api_url = "https://blockchain.ownyourdata.eu/api/doc"
+			end
 			response = HTTParty.post(api_url,
 				timeout: 25,
 	            headers: { 'Content-Type' => 'application/json' },

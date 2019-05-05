@@ -16,6 +16,20 @@
     </div>
   </div>
   <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="blockchain_ARTIS">
+      <h2 class="panel-title">
+        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOneARTIS" aria-expanded="true" aria-controls="collapseOneARTIS">
+          Über ARTIS
+        </a>
+      </h2>
+    </div>
+    <div id="collapseOneARTIS" class="panel-collapse collapse" role="tabpanel" aria-labelledby="blockchain_ARTIS">
+      <div class="panel-body">
+        <p>Das <a href="https://artis.eco/en/" target="_blank">ARTIS-Netzwerk</a> ist ein benutzerfreundliches öffentliches Blockchain-System, das durch den Verzicht auf energieintensives Mining auf Nachhaltigkeit ausgelegt ist. Als Ethereum-Sidechain verwendet das ARTIS Network die performante Parity-Node-Software, die WebAssembly aktiviert hat. Dadurch kann jeder Smart Contract mit höchster Sicherheit unter Verwendung von Rust, C oder C ++ entwickelt werden. Vorhandene DApps können parallel in mehreren Blockchains verwendet oder migriert werden, je nachdem, was bevorzugt und geeigneter ist.</p>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="blockchain_open_source">
       <h2 class="panel-title">
         <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
@@ -41,11 +55,11 @@
     <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="blockchain_api">
       <div class="panel-body">
         <p>Der Dienst zum Versiegeln von Dokumenten verwendet im Hintergrund eine frei zugängliche API, die ebenfalls von anderen Diensten genutzt werden kann. Mittels HTTP POST Request kann ein Hashwert sowohl in die Blockchain geschrieben werden, oder - wenn der Hashwert zuvor bereits verwendet wurde - wird die Adresse in der Blockchain zurückgegeben. Da alle Hashwerte eines Tages in einem Merkle-Baum kombiniert werden, ist neben der Adresse in der Blockchain auch der Audit-Proof wie in <a href="https://tools.ietf.org/html/rfc6962">RFC 6962</a> angegeben.</p>
-        <p>Diese API ist mittels Swagger hier beschrieben (nur in englischer Sprache): <a href="https://blockchain.ownyourdata.eu/doc">https://blockchain.ownyourdata.eu/doc</a><br>
+        <p>Diese API ist mittels Swagger hier beschrieben (nur in englischer Sprache): <a href="https://artis.ownyourdata.eu/doc">https://artis.ownyourdata.eu/doc</a><br>
         Auf Github ist der Quellcode für das API-Service unter der MIT-Lizenz frei verfügbar:</p>
         <ul>
           <li>High-level API: <a href="https://github.com/OwnYourData/api-blockchain">https://github.com/OwnYourData/api-blockchain</a></li>
-          <li>Blockchain Service: <a href="https://github.com/OwnYourData/service-blockchain">https://github.com/OwnYourData/service-blockchain</a></li>
+          <li>Blockchain Service: <a href="https://github.com/OwnYourData/service-blockchain/tree/master/docker/srv-artis">https://github.com/OwnYourData/service-blockchain/tree/master/docker/srv-artis</a></li>
         </ul>
       </div>
     </div>
@@ -61,7 +75,7 @@
     <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="blockchain_api_samples">
       <div class="panel-body">
         <p>Verwende den folgenden Aufruf, um einen Hashwert mittels API in der Blockchain zu speichern:<br>
-          <pre>$ curl -X POST "https://blockchain.ownyourdata.eu/api/doc?hash=006748c21efaf8fe67b833d82cba7955619c3c3b06e11ed6562fbf6a1cb06f2c"</pre></p>
+          <pre>$ curl -X POST "https://artis.ownyourdata.eu/api/doc?hash=006748c21efaf8fe67b833d82cba7955619c3c3b06e11ed6562fbf6a1cb06f2c"</pre></p>
         <p>Beim ersten Aufruf wird folgende JSON-Struktur als Rückgabewert geliefert:<br>
           <pre>{
   "status": "new",

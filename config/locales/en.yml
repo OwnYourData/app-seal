@@ -1,6 +1,7 @@
 en:
   general:
     title: "Seal Document with Blockchain"
+    titleARTIS: "Artis Notary Service"
     # info: "On this page you can generate an independently verifiable timestamp (= seal) for your documents for free. Every time the first known timestamp for the document will be displayed."
     info: | 
         Here's the safest and easiest place to protect your data and documents. Whether piece of music, photo, 
@@ -11,7 +12,17 @@ en:
             all the necessary information to prove timestamp and original state of your documents independently from us.
         </br></br>
         <em><strong>Tip for all curious:</strong></em> Test it now with any sample document or 
-            <u><a href='https://seal.ownyourdata.eu/en?hash=006748c21efaf8fe67b833d82cba7955619c3c3b06e11ed6562fbf6a1cb06f2c'>check out an existing document</a></u>!
+            <u><a href='https://notary.ownyourdata.eu/en?hash=006748c21efaf8fe67b833d82cba7955619c3c3b06e11ed6562fbf6a1cb06f2c'>check out an existing document</a></u>!
+    infoARTIS: | 
+        Here's the safest and easiest place to protect your data and documents. Whether piece of music, photo, 
+        algorithm or other information worthy of protection - thanks to Blockchain technology, your information 
+        is anonymous, tamper-proof and legally binding.
+        </br></br>
+        <em><strong>Why its great:</strong></em> We do not store any of your files, but provide you with 
+            all the necessary information to prove timestamp and original state of your documents independently from us.
+        </br></br>
+        <em><strong>Tip for all curious:</strong></em> Test it now with any sample document or 
+            <u><a href='https://notary-artis.ownyourdata.eu/en?hash=006748c21efaf8fe67b833d82cba7955619c3c3b06e11ed6562fbf6a1cb06f2c'>check out an existing document</a></u>!
     fingerprint_info: "Fingerprint (hash value) for "
     submit: "Request Seal"
     wait: "Wait..."

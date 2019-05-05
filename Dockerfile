@@ -1,4 +1,4 @@
-FROM ruby:2.5.1
+FROM ruby:2.5.3
 MAINTAINER "Christoph Fabianek" christoph@ownyourdata.eu
 
 RUN mkdir -p /usr/src/app
