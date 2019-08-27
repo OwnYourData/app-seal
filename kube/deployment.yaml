@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notary-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: notary
+  template:
+    metadata:
+      labels:
+        app: notary
+    spec:
+      containers:
+      - name: notary
+        image: oydeu/app-seal:latest
+        ports:
+        - containerPort: 3000
+        env:
+          - name: LANG
+            value: C.UTF-8
+          - name: RAILS_LOG_TO_STDOUT
+            value: "TRUE"
+          - name: RAILS_SERVE_STATIC_FILES
+            value: "TRUE"
+          - name: RAILS_ENV
+            value: production
+          - name: SECRET_KEY_BASE
+            valueFrom:
+              secretKeyRef:
+                name: notary-secrets
+                key: secret-key-base
+          - name: GOOGLE_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: general-secrets
+                key: google-token

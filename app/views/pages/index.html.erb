@@ -5,7 +5,7 @@
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
-        <%= t('general.info' + ENV["BLOCKCHAIN"]).html_safe %>
+        <%= t('general.info' + ENV["BLOCKCHAIN"].to_s).html_safe %>
       </div>
     </div>
   <% else
@@ -120,14 +120,14 @@
                     <ul>
                         <li>wurde am <span id="oyd_ts"></span> auf dieser Webseite erstellt</li>
                         <% if @root_node.to_s == "" %>
-                            <% case  ENV["BLOCKCHAIN"] %>
+                            <% case  ENV["BLOCKCHAIN"].to_s %>
                             <% when "ARTIS" %>
                               <li>wird in den nächsten Minuten in <a href="https://artis.eco/en/" target="_blank">ARTIS</a> gespeichert</li>
                             <% else %>
                               <li>wird in ca. <%= @wait %> Stunden in <a href="https://de.wikipedia.org/wiki/Ethereum" target="_blank">Ethereum</a> gespeichert</li>
                             <% end %>
                         <% else %>
-                            <% case  ENV["BLOCKCHAIN"] %>
+                            <% case  ENV["BLOCKCHAIN"].to_s %>
                             <% when "ARTIS" %>
                               <li>wurde <% if @ether_ts.to_s != "" %>am <span id="ether_ts"></span><% end %> in <a href="https://artis.eco/en/" target="_blank">ARTIS</a> gespeichert - <a class="collapsed" data-toggle="collapse" href="#hintBlockchain" aria-expanded="false" aria-controls="hintBlockchain">Anleitung zur Überprüfung</a>
                                   <div id="hintBlockchain" class="panel-collapse collapse" aria-labelledby="hintBlockchain_text">
@@ -245,14 +245,14 @@
                     <ul>
                         <li>at <span id="oyd_ts"></span> the hash value was created on this website</li>
                         <% if @root_node.to_s == "" %>
-                            <% case  ENV["BLOCKCHAIN"] %>
+                            <% case  ENV["BLOCKCHAIN"].to_s %>
                             <% when "ARTIS" %>
                               <li>will be stored within a few minutes in <a href="https://artis.eco/en/" target="_blank">ARTIS</a></li>
                             <% else %>
                               <li>will be stored in about <%= @wait %> hours in <a href="https://en.wikipedia.org/wiki/Ethereum" target="_blank">Ethereum</a></li>
                             <% end %>
                         <% else %>
-                            <% case  ENV["BLOCKCHAIN"] %>
+                            <% case  ENV["BLOCKCHAIN"].to_s %>
                             <% when "ARTIS" %>
                                 <li><% if @ether_ts.to_s != "" %>at <span id="ether_ts"></span><% end %> the hash value was stored in <a href="https://artis.eco/en/" target="_blank">ARTIS</a> - <a class="collapsed" data-toggle="collapse" href="#hintBlockchain" aria-expanded="false" aria-controls="hintBlockchain">Instructions for verification</a>
                                     <div id="hintBlockchain" class="panel-collapse collapse" aria-labelledby="hintBlockchain_text">
@@ -361,7 +361,7 @@
     </div>
 <% end %>
 
-<%= render 'pages/docs' + ENV["BLOCKCHAIN"] %>
+<%= render 'pages/docs' + ENV["BLOCKCHAIN"].to_s %>
 
 <script type="text/javascript">
     $('.selectpicker').selectpicker('refresh');

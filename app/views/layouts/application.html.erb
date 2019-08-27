@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= t('general.title' + ENV["BLOCKCHAIN"]) %></title>
+    <title><%= t('general.title' + ENV["BLOCKCHAIN"].to_s) %></title>
     <%= csrf_meta_tags %>
   
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','<%= ENV["GOOGLE_TOKEN"] %>');</script>
@@ -21,7 +21,7 @@
           <a href="https://www.ownyourdata.eu/<%= I18n.locale.to_s %>"><%= image_tag 'oyd.png', style: "height: 48px; margin: 18px 0;" %></a>
         </div>
         <div class="col-xs-8">
-          <h1 style="text-align: center; margin-bottom: 30px;"><%= t('general.title' + ENV["BLOCKCHAIN"]) %></h1>
+          <h1 style="text-align: center; margin-bottom: 30px;"><%= t('general.title' + ENV["BLOCKCHAIN"].to_s) %></h1>
         </div>
         <div class="col-xs-2" style="white-space: nowrap; margin-top: 30px; text-align: right;">
           <%= link_to_unless I18n.locale.to_s == "de", "DE", { locale: 'de', hash: params[:hash], mode: params[:mode], operation: params[:operation] } %> | 

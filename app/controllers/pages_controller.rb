@@ -16,7 +16,7 @@ class PagesController < ApplicationController
 			end
 			@wait = (my_time.utc.to_i - Time.now.utc.to_i)/3600
 			
-			case ENV["BLOCKCHAIN"]
+			case ENV["BLOCKCHAIN"].to_s
 			when "ARTIS"
 				api_url = "https://artis.ownyourdata.eu/api/doc"
 			else
@@ -96,7 +96,7 @@ class PagesController < ApplicationController
 			hash = params[:hash_advanced].to_s.strip
 		end
 		if hash != ""
-			case ENV["BLOCKCHAIN"]
+			case ENV["BLOCKCHAIN"].to_s
 			when "ARTIS"
 				api_url = "https://artis.ownyourdata.eu/api/doc"
 			else
@@ -147,7 +147,7 @@ class PagesController < ApplicationController
 	def tsr
 		hash = params[:hash].to_s.strip
 		if hash != ""
-			case ENV["BLOCKCHAIN"]
+			case ENV["BLOCKCHAIN"].to_s
 			when "ARTIS"
 				api_url = "https://artis.ownyourdata.eu/api/doc"
 			else
@@ -174,7 +174,7 @@ class PagesController < ApplicationController
 	def read_tsr
 		hash = params[:hash].to_s.strip
 		if hash != ""
-			case ENV["BLOCKCHAIN"]
+			case ENV["BLOCKCHAIN"].to_s
 			when "ARTIS"
 				api_url = "https://artis.ownyourdata.eu/api/doc"
 			else
